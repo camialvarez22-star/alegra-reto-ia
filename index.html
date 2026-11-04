@@ -556,15 +556,18 @@ const MISSIONS = {
     subtitle: "Nada de clics al azar: cada misión de hoy exige un resultado concreto, no solo abrir la pantalla.",
     accent: "#00D6BC", emoji: "🧩",
     items: [
-      { id:"d1-diagnostico", title:"Diagnóstico de 3 cifras con el Agente", desc:"Pídele al Agente exactamente estas 3 cifras de tu negocio: tu cartera vencida, tu gasto más alto del mes y tu margen bruto. No vale una pregunta genérica.", pts:5, verify:"amplitude", event:"agent_message_sent",
-        link:{url:"https://app.alegra.com",label:"Abrir Alegra"}, linkNote:"Busca el ícono del Agente en el menú." },
-      { id:"d1-mcp", title:"Conecta vía MCP y úsalo desde afuera", desc:"Conecta Alegra con Claude o ChatGPT vía MCP y, desde esa herramienta (no desde Alegra), pídele tus facturas pendientes de cobro.", pts:6, verify:"amplitude", event:"mcp_connection_created",
-        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-claude",label:"Ver cómo conectar"} },
+      { id:"d1-diagnostico", title:"Haz las 3 preguntas que más usan los contadores", desc:"Abre el Agente de Alegra y hazle estas 3 preguntas (una por una, en conversaciones separadas):\n\n📊 Pregunta 1 — Ventas: «¿Cuánto vendí el mes pasado y quiénes fueron mis 3 mejores clientes?»\n\n💰 Pregunta 2 — Cartera: «¿Quién me debe dinero? Muéstrame las facturas vencidas hace más de 30 días ordenadas de mayor a menor.»\n\n📋 Pregunta 3 — Balance: «Genera el estado de situación financiera del mes actual con activos, pasivos y patrimonio.»\n\nNo vale una pregunta genérica — el Agente debe darte números reales de tu empresa.", pts:5, verify:"amplitude", event:"agent_message_sent",
+        link:{url:"https://app.alegra.com",label:"Abrir Alegra"}, linkNote:"Busca el ícono del Agente en el menú lateral.",
+        helpLink:{url:"https://ayuda.alegra.com/col/agente-ia-alegra",label:"📖 Cómo usar el Agente de IA"} },
+      { id:"d1-mcp", title:"Conecta vía MCP y úsalo desde afuera", desc:"Conecta Alegra con Claude o ChatGPT vía MCP y, desde esa herramienta (no desde Alegra), pídele tus facturas pendientes de cobro. Una vez conectado, haz clic en el botón de abajo para notificar al equipo.", pts:6, verify:"amplitude", event:"mcp_connection_created",
+        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-claude",label:"Ver cómo conectar"},
+        helpLink:{url:"https://ayuda.alegra.com/col/que-es-mcp-alegra",label:"📖 ¿Qué es el MCP de Alegra?"} },
       { id:"d1-funcionalidad", title:"Activa tu funcionalidad #1 — a fondo", desc:"No basta con abrirla una vez: hazlo al nivel que te pide cada opción.", pts:7, verify:"choice",
         choices:["Conciliaciones bancarias (mínimo 10 movimientos)","Catálogo de cuentas (crea y clasifica 2 cuentas nuevas)","Centros de costos (asígnalo a mínimo 3 facturas o gastos)"],
         choiceLinks:["https://app.alegra.com/conciliation","https://app.alegra.com/category","https://app.alegra.com/cost-center"],
         choiceEvents:["bank_reconciliation_created","category_created","cost_center_assigned"],
-        choiceMinCounts:[10,2,3] },
+        choiceMinCounts:[10,2,3],
+        choiceHelpLinks:["https://ayuda.alegra.com/col/conciliacion-bancaria","https://ayuda.alegra.com/col/catalogo-de-cuentas","https://ayuda.alegra.com/col/centros-de-costos"] },
       { id:"d1-academy", title:"Curso Academy: IA para Pymes", desc:"Completa el taller «Cómo usar la IA para automatizar las tareas de tu negocio» en Alegra Academy y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/ia-para-pymes/",label:"Ir al curso"},
         uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
@@ -579,21 +582,26 @@ const MISSIONS = {
     accent: "#06ECD0", emoji: "⚙️",
     items: [
       { id:"d2-nota-credito", title:"Flujo con nota crédito", desc:"Cotización → factura → cobro, y aplícale una nota crédito parcial a esa factura. Sube una captura que muestre la factura con la nota crédito ya aplicada.", pts:10, verify:"self",
-        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"} },
-      { id:"d2-conciliacion-mes", title:"Concilia el mes completo", desc:"Concilia un mes calendario completo de tu cuenta bancaria: mínimo 15 movimientos, no solo un par sueltos.", pts:8, verify:"amplitude", event:"bank_reconciliation_created", minCount:15,
-        link:{url:"https://app.alegra.com/conciliation",label:"Abrir Conciliaciones"} },
-      { id:"d2-analisis", title:"Análisis comparativo mes a mes", desc:"Pídele al Agente que compare tus ventas o gastos de este mes contra el anterior, y que te explique qué cambió y por qué.", pts:6, verify:"amplitude", event:"agent_analysis_requested",
-        link:{url:"https://app.alegra.com",label:"Abrir Alegra"} },
-      { id:"d2-funcionalidad", title:"Activa tu funcionalidad #2", desc:"Elige una distinta a la de ayer.", pts:5, verify:"choice",
+        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"},
+        helpLink:{url:"https://ayuda.alegra.com/col/nota-credito-de-venta",label:"📖 Cómo crear una nota crédito"} },
+      { id:"d2-conciliacion-mes", title:"Concilia el mes completo", desc:"Concilia un mes calendario completo de tu cuenta bancaria: mínimo 15 movimientos, no solo un par sueltos. Cuando termines, notifica al equipo con el botón de abajo.", pts:8, verify:"amplitude", event:"bank_reconciliation_created", minCount:15,
+        link:{url:"https://app.alegra.com/conciliation",label:"Abrir Conciliaciones"},
+        helpLink:{url:"https://ayuda.alegra.com/col/conciliacion-bancaria",label:"📖 Cómo conciliar tu cuenta bancaria"} },
+      { id:"d2-analisis", title:"Análisis comparativo mes a mes", desc:"Pídele al Agente que compare tus ventas o gastos de este mes contra el anterior, y que te explique qué cambió y por qué. Cuando termines, notifica al equipo con el botón de abajo.", pts:6, verify:"amplitude", event:"agent_analysis_requested",
+        link:{url:"https://app.alegra.com",label:"Abrir Alegra"},
+        helpLink:{url:"https://ayuda.alegra.com/col/agente-ia-alegra",label:"📖 Cómo usar el Agente de IA"} },
+      { id:"d2-funcionalidad", title:"Activa tu funcionalidad #2", desc:"Elige una distinta a la de ayer. Cuando la actives, notifica al equipo con el botón de abajo.", pts:5, verify:"choice",
         choices:["Comprobantes contables","Crear saldos iniciales","Balance de prueba por tercero"],
-        choiceLinks:["https://app.alegra.com/ledger/documents","https://app.alegra.com/journal/view-opening-balance",null],
-        choicePaths:[null,null,"Reportes > Contables > Balance de prueba por tercero"],
-        choiceEvents:["journal_entry_created","opening_balance_created","trial_balance_viewed"] },
-      { id:"d2-academy", title:"Curso Academy: Conecta tu IA con Alegra", desc:"Completa el taller «Conecta tu IA con Alegra y eleva el nivel de tu operación» y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
+        choiceLinks:["https://app.alegra.com/ledger/documents","https://app.alegra.com/journal/view-opening-balance","https://app.alegra.com/report/trial-balance-by-third"],
+        choicePaths:[null,null,null],
+        choiceEvents:["journal_entry_created","opening_balance_created","trial_balance_viewed"],
+        choiceHelpLinks:["https://ayuda.alegra.com/col/comprobantes-contables","https://ayuda.alegra.com/col/saldos-iniciales","https://ayuda.alegra.com/col/balance-de-prueba-por-tercero"] },
+      { id:"d2-academy", title:"Curso Academy: Conecta tu IA con Alegra", desc:"Completa el taller «Conecta tu IA con Alegra y eleva el nivel de tu operación» y sube tu certificado a la carpeta de Drive. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/taller-conecta-tu-ia-con-alegra/",label:"Ir al curso"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
-      { id:"d2-bonus", bonus:true, title:"Bonus: automatiza un cobro", desc:"Configura cobro automático o factura recurrente.", pts:3, verify:"self",
-        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado Día 2"} },
+      { id:"d2-bonus", bonus:true, title:"Bonus: automatiza un cobro", desc:"Configura cobro automático o factura recurrente. Cuando termines, notifica al equipo con el botón de abajo.", pts:3, verify:"amplitude", event:"recurring_invoice_created",
+        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"},
+        helpLink:{url:"https://ayuda.alegra.com/col/facturas-recurrentes",label:"📖 Cómo configurar facturas recurrentes"} },
     ],
   },
   3: {
@@ -601,25 +609,29 @@ const MISSIONS = {
     subtitle: "El día más exigente: esto es lo que separa a quien de verdad se ganó el premio de quien solo pasó por aquí.",
     accent: "#50EEA2", emoji: "🏆",
     items: [
-      { id:"d3-estados-comparados", title:"Compara dos periodos completos", desc:"Genera el Estado de Resultados Y el Balance General, compara dos periodos consecutivos y pídele al Agente que te explique la variación más grande.", pts:8, verify:"amplitude", event:"profit_loss_viewed",
-        link:{url:"https://app.alegra.com/report/profit-and-loss",label:"Abrir Estado de Resultados"} },
+      { id:"d3-estados-comparados", title:"Compara dos periodos completos", desc:"Genera el Estado de Resultados Y el Balance General, compara dos periodos consecutivos y pídele al Agente que te explique la variación más grande. Cuando termines, notifica al equipo.", pts:8, verify:"amplitude", event:"profit_loss_viewed",
+        link:{url:"https://app.alegra.com/report/profit-and-loss",label:"Abrir Estado de Resultados"},
+        helpLink:{url:"https://ayuda.alegra.com/col/estado-de-resultados",label:"📖 Cómo ver el Estado de Resultados"} },
       { id:"d3-cierre-completo", title:"Cierre contable real de un periodo", desc:"Haz el cierre de cuentas por tercero de un periodo completo. Sube una captura que muestre el cierre ya aplicado, no solo iniciado.", pts:10, verify:"self",
-        link:{url:"https://app.alegra.com/accounting/closing-by-third-party",label:"Abrir Cierre por tercero"} },
+        link:{url:"https://app.alegra.com/accounting/closing-by-third-party",label:"Abrir Cierre por tercero"},
+        helpLink:{url:"https://ayuda.alegra.com/col/cierre-contable-por-tercero",label:"📖 Cómo hacer el cierre contable"} },
       { id:"d3-mcp-encadenado", title:"Flujo MCP de 2 pasos encadenados", desc:"Encadena 2 acciones automáticas vía MCP (ej: generar un reporte Y guardarlo en Drive, o crear una factura Y notificarla en Slack). Sube una captura del resultado completo.", pts:8, verify:"self",
-        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-chatgpt",label:"Ver cómo conectar"} },
-      { id:"d3-funcionalidad", title:"Activa tu funcionalidad #3", desc:"Elige una distinta a las de Día 1 y 2.", pts:5, verify:"choice",
+        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-chatgpt",label:"Ver cómo conectar"},
+        helpLink:{url:"https://ayuda.alegra.com/col/que-es-mcp-alegra",label:"📖 ¿Qué es el MCP de Alegra?"} },
+      { id:"d3-funcionalidad", title:"Activa tu funcionalidad #3", desc:"Elige una distinta a las de Día 1 y 2. Cuando la actives, notifica al equipo.", pts:5, verify:"choice",
         choices:["Informe contador","Libro diario","Auxiliar por tercero"],
-        choiceLinks:[null,"https://app.alegra.com/report/ledger-journals",null],
-        choicePaths:["Agente > Reportes > Para trabajar > Informe contador",null,"Reportes > Contables > Auxiliar por tercero"],
-        choiceEvents:["accountant_report_viewed","journal_viewed","third_party_ledger_viewed"] },
-      { id:"d3-academy", title:"Curso Academy: IA para Contadores", desc:"Completa el «Curso de Inteligencia Artificial para Contadores» y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
+        choiceLinks:["https://app.alegra.com/report/accountant","https://app.alegra.com/report/ledger-journals","https://app.alegra.com/report/third-party-ledger"],
+        choicePaths:[null,null,null],
+        choiceEvents:["accountant_report_viewed","journal_viewed","third_party_ledger_viewed"],
+        choiceHelpLinks:["https://ayuda.alegra.com/col/informe-contador","https://ayuda.alegra.com/col/libro-diario","https://ayuda.alegra.com/col/auxiliar-por-tercero"] },
+      { id:"d3-academy", title:"Curso Academy: IA para Contadores", desc:"Completa el «Curso de Inteligencia Artificial para Contadores» y sube tu certificado a la carpeta de Drive. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/ia-para-contadores/",label:"Ir al curso"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado Día 3"} },
       { id:"d3-bonus", bonus:true, title:"Bonus: graba un video de 60s", desc:"Cuéntale a otros contadores cómo la IA cambió tu trabajo, con #RetoAlegra, y sube tu video a la carpeta.", pts:8, verify:"manual",
-        uploadLink:{url:"https://drive.google.com/drive/folders/176VnOXK-wt9JIV5etmjeY9vIGbQDtZE7?usp=sharing",label:"Subir video"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/176VnOXK-wt9JIV5etmjeY9vIGbQDtZE7?usp=sharing",label:"📂 Subir video"} },
       { id:"d3-academy-bonus", bonus:true, title:"Bonus: un curso extra de Academy, el que quieras", desc:"Completa cualquier otro curso del catálogo de Alegra Academy, distinto a los 3 obligatorios del reto, y sube el certificado.", pts:8, verify:"manual",
         link:{url:"https://academy.alegra.com",label:"Ver catálogo de Academy"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado"} },
     ],
   },
 };
@@ -767,12 +779,7 @@ function renderProgress(){
   document.getElementById("nextLevelNote").textContent=next?`Te faltan ${next.min-pts} pts para ${next.name}`:"¡Llegaste al tope del reto! 🎉";
 }
 function isDayUnlocked(dayNum){
-  for(let d=1; d<dayNum; d++){
-    const day=MISSIONS[d]; if(!day) continue;
-    const required=day.items.filter(i=>!i.bonus);
-    if(!required.every(i=>state.done[i.id])) return false;
-  }
-  return true;
+  return true; // Todos los días están disponibles desde el inicio
 }
 function renderTabs(){
   const el=document.getElementById("dayTabs");el.innerHTML="";
@@ -793,7 +800,19 @@ function verifyLabel(v){
   if(v==="manual") return "El equipo lo revisa en la carpeta compartida y te asigna los puntos";
   return "Sube tu evidencia y el equipo te asigna los puntos";
 }
-function linkRowHtml(m){if(!m.link)return"";const n=m.linkNote?` <span class="choice-row-path">${m.linkNote}</span>`:"";const href=withUtm(m.link.url,m.id);return`<div class="choice-row"><a class="mission-link" href="${href}" target="_blank" rel="noopener">${m.link.label} →</a>${n}</div>`}
+function linkRowHtml(m){
+  let html="<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0'>";
+  if(m.link){
+    const href=withUtm(m.link.url,m.id);
+    const note=m.linkNote?`<span style="font-size:11px;color:var(--text-faint)">${m.linkNote}</span>`:"";
+    html+=`<a href="${href}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;border-radius:8px;padding:6px 14px;background:var(--accent-strong);white-space:nowrap">${m.link.label} →</a>${note}`;
+  }
+  if(m.helpLink){
+    html+=`<a href="${m.helpLink.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;background:var(--surface-2);white-space:nowrap">${m.helpLink.label}</a>`;
+  }
+  html+="</div>";
+  return html;
+}
 
 function lockedNoteHtml(){
   return `<div class="mission-actions"><span class="mission-tag locked-tag">🔒 Se desbloquea al completar las misiones obligatorias del día anterior</span></div>`;
@@ -814,8 +833,11 @@ function renderMissions(){
     if(m.verify==="choice"){
       const ch=state.choices[m.id];
       act+=`<div class="choice-group">`+m.choices.map((c,i)=>{
-        const url=m.choiceLinks&&m.choiceLinks[i],path=m.choicePaths&&m.choicePaths[i];
-        const lk=url?`<a class="mission-link" href="${withUtm(url,m.id+":"+c)}" target="_blank" rel="noopener">Abrir en Alegra →</a>`:(path?`<span class="choice-row-path">Ruta: ${path}</span>`:"");
+        const url=m.choiceLinks&&m.choiceLinks[i],path=m.choicePaths&&m.choicePaths[i],hlp=m.choiceHelpLinks&&m.choiceHelpLinks[i];
+        const helpBtn=hlp?`<a href="${hlp}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--text-faint);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;background:var(--surface-2)">📖 Ayuda</a>`:"";
+        const alegraBtn=url?`<a href="${withUtm(url,m.id+":"+c)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--accent-strong);text-decoration:none;border:1px solid var(--accent-strong);border-radius:6px;padding:3px 8px;background:transparent">Abrir en Alegra →</a>`:"";
+        const pathTxt=path?`<span class="choice-row-path" style="font-size:11px">Ruta: ${path}</span>`:"";
+        const lk=`<span style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap">${alegraBtn}${pathTxt}${helpBtn}</span>`;
         const clickAttr=interactive?`onclick="chooseOption('${m.id}','${c.replace(/'/g,"\\'")}')"`:"";
         return`<div class="choice-row"><span class="choice-option ${ch===c?"selected":""}${interactive?"":" locked-option"}" ${clickAttr}>${c}</span>${lk}</div>`;
       }).join("")+`</div>`;
@@ -833,11 +855,9 @@ function renderMissions(){
     }else if(m.verify==="amplitude"){
       act+=linkRowHtml(m);
       if(done){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado por Amplitude, puntos asignados</span></div>`;
-      }else if(pending){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ Enviado — el equipo lo verificará en Amplitude y te asignará los puntos</span></div>`;
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado automáticamente — puntos asignados</span></div>`;
       }else if(interactive){
-        act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="claimAmplitude(${state.activeDay},'${m.id}')">⚡ Ya lo hice en Alegra — notificar al equipo</button></div>`;
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-muted)">⚡ Los puntos se asignan solos en cuanto uses esta función en Alegra</span></div>`;
       }else{
         act+=lockedNoteHtml();
       }
@@ -859,18 +879,16 @@ function renderMissions(){
       }else if(pending){
         act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ Enviado, en revisión por el equipo</span></div>`;
       }else if(interactive){
-        act+=`<div class="mission-actions">${m.uploadLink?`<a class="mission-link" href="${withUtm(m.uploadLink.url,m.id+"-evidencia")}" target="_blank" rel="noopener">${m.uploadLink.label} →</a>`:""} <button class="btn btn-outline btn-sm" onclick="claimManual(${state.activeDay},'${m.id}')">Ya lo subí, revísenlo</button></div>`;
+        act+=`<div class="mission-actions" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">${m.uploadLink?`<a href="${withUtm(m.uploadLink.url,m.id+"-evidencia")}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;border-radius:8px;padding:6px 14px;background:#6366F1;white-space:nowrap">📂 ${m.uploadLink.label} →</a>`:""}<button class="btn btn-outline btn-sm" onclick="claimManual(${state.activeDay},'${m.id}')">✅ Ya lo subí, revísenlo</button></div>`;
       }else{
         act+=lockedNoteHtml();
       }
     }else{
       act+=linkRowHtml(m);
       if(done){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Completada</span></div>`;
-      }else if(pending){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ En revisión</span></div>`;
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado automáticamente — puntos asignados</span></div>`;
       }else if(interactive){
-        act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="claimAmplitude(${state.activeDay},'${m.id}')">⚡ Ya lo hice en Alegra — notificar al equipo</button></div>`;
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-muted)">⚡ Los puntos se asignan solos en cuanto uses esta función en Alegra</span></div>`;
       }else{
         act+=lockedNoteHtml();
       }
