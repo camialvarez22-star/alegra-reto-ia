@@ -820,8 +820,26 @@ function renderMissions(){
         return`<div class="choice-row"><span class="choice-option ${ch===c?"selected":""}${interactive?"":" locked-option"}" ${clickAttr}>${c}</span>${lk}</div>`;
       }).join("")+`</div>`;
       if(!done){
-        if(interactive) act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" ${ch?"":"disabled"} onclick="completeMission(${state.activeDay},'${m.id}')">Marcar como completada</button></div>`;
-        else act+=lockedNoteHtml();
+        if(interactive){
+          if(ch){
+            act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="completeMission(${state.activeDay},'${m.id}')">✅ Ya lo hice — marcar como completada</button></div>`;
+          } else {
+            act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-faint)">👆 Elige una opción arriba para continuar</span></div>`;
+          }
+        } else {
+          act+=lockedNoteHtml();
+        }
+      }
+    }else if(m.verify==="amplitude"){
+      act+=linkRowHtml(m);
+      if(done){
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado por Amplitude, puntos asignados</span></div>`;
+      }else if(pending){
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ Enviado — el equipo lo verificará en Amplitude y te asignará los puntos</span></div>`;
+      }else if(interactive){
+        act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="claimAmplitude(${state.activeDay},'${m.id}')">⚡ Ya lo hice en Alegra — notificar al equipo</button></div>`;
+      }else{
+        act+=lockedNoteHtml();
       }
     }else if(m.verify==="self"){
       act+=linkRowHtml(m);
@@ -847,7 +865,15 @@ function renderMissions(){
       }
     }else{
       act+=linkRowHtml(m);
-      if(locked) act+=lockedNoteHtml();
+      if(done){
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Completada</span></div>`;
+      }else if(pending){
+        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ En revisión</span></div>`;
+      }else if(interactive){
+        act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="claimAmplitude(${state.activeDay},'${m.id}')">⚡ Ya lo hice en Alegra — notificar al equipo</button></div>`;
+      }else{
+        act+=lockedNoteHtml();
+      }
     }
     const statusClass=done?"done":pending?"pending":(locked?"locked":"");
     const statusText=done?"Completada":pending?"En revisión":(locked?"Bloqueada":"Pendiente");
@@ -879,6 +905,14 @@ async function submitEvidence(day,missionId){
   }catch(e){ alert("No se pudo enviar la evidencia: "+e.message); }
 }
 
+async function claimAmplitude(day,missionId){
+  if(!state.participantId){ alert("Regístrate con tu correo antes de reclamar esta misión."); return; }
+  if(!confirm("¿Ya realizaste esta acción en Alegra? El equipo lo verificará en Amplitude y te asignará los puntos.")) return;
+  if(sb){
+    try{ await sb.from("mission_submissions").upsert({participant_id:state.participantId,mission_id:missionId,day,file_url:null,status:"pending",submitted_at:new Date().toISOString(),note:"Verificar en Amplitude: evento de misión "+missionId+" para email "+state.email}); }catch(e){}
+  }
+  state.pending[missionId]=true; saveState(); renderAll();
+}
 async function claimManual(day,missionId){
   if(!state.participantId){ alert("Regístrate con tu correo antes de reclamar esta misión."); return; }
   if(!confirm("¿Ya subiste tu evidencia a la carpeta indicada? El equipo la va a revisar antes de darte los puntos.")) return;
