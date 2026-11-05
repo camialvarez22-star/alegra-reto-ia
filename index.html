@@ -722,15 +722,10 @@ async function register(){
     // Avatar clickeable
     const avWrap=document.createElement("div");
     avWrap.style.cssText="position:relative;cursor:pointer;flex-shrink:0";
-    const avImg=document.createElement("img");
-    avImg.src=avatarUrl(getAvatar(), state.email||"user");
-    avImg.width=64; avImg.height=64;
-    avImg.style.cssText="border-radius:50%;border:2px solid #00897B;background:#eee";
-    avImg.alt="avatar";
+    avWrap.innerHTML=buildAvatarSVG(getAvatar(), 64);
     const avEdit=document.createElement("span");
     avEdit.style.cssText="position:absolute;bottom:-2px;right:-2px;background:#00897B;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px";
     avEdit.textContent="✏️";
-    avWrap.appendChild(avImg);
     avWrap.appendChild(avEdit);
     avWrap.onclick=()=>openAvatarEditor();
 
