@@ -1175,13 +1175,25 @@ checkAdminRoute();
 
 
 function showView(){
-  const h = location.hash.replace("#","");
+  const h = location.hash.replace("#","").split("?")[0].trim();
   const introEl = document.getElementById("view-intro");
   const retoEl = document.getElementById("view-reto");
-  const showReto = (h !== "" && h !== "intro");
-  introEl.style.display = showReto ? "none" : "";
-  retoEl.style.display = showReto ? "" : "none";
+  const showReto = (h === "reto" || h === "admin" || h === "ranking");
+  if(introEl) introEl.style.display = showReto ? "none" : "";
+  if(retoEl) retoEl.style.display = showReto ? "" : "none";
+  if(!showReto && h !== "" && h !== "intro"){
+    // hash desconocido — mostrar reto por defecto
+    if(introEl) introEl.style.display = "none";
+    if(retoEl) retoEl.style.display = "";
+  }
 }
+
+// También interceptar clicks en botones que usan href="#reto"
+document.addEventListener("click", function(e){
+  const a = e.target.closest("a[href='#reto']");
+  if(a){ e.preventDefault(); location.hash = "reto"; showView(); window.scrollTo(0,0); }
+});
+
 window.addEventListener("hashchange", function(){ showView(); checkAdminRoute(); window.scrollTo(0,0); });
 showView();
 </script>
