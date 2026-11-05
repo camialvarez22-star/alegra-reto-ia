@@ -1059,8 +1059,8 @@ function openAvatarEditor(){
   modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto";
 
   function btnStyle(selected){ return `border:2px solid ${selected?"#00897B":"#eee"};border-radius:8px;padding:5px 9px;font-size:11px;cursor:pointer;background:${selected?"#E8F5E9":"transparent"};color:${selected?"#00535E":"#555"}`; }
-  function colorBtn(hex, selected, fn){ return `<button onclick="${fn}" title="${hex}" style="width:30px;height:30px;border-radius:50%;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
-  function sqBtn(hex, selected, fn){ return `<button onclick="${fn}" title="${hex}" style="width:30px;height:30px;border-radius:6px;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
+  function colorBtn(hex, selected, key){ return `<button onclick="setAv('${key}','${hex}')" data-av-key="${key}" data-av-val="${hex}" data-av-type="color" title="${hex}" style="width:30px;height:30px;border-radius:50%;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
+  function sqBtn(hex, selected, key){ return `<button onclick="setAv('bg','${hex}')" data-av-key="bg" data-av-val="${hex}" data-av-type="sq" title="${hex}" style="width:30px;height:30px;border-radius:6px;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
 
   function render(){
     const c=getAvatar();
@@ -1078,50 +1078,78 @@ function openAvatarEditor(){
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Género</div>
         <div style="display:flex;gap:8px">
-          ${[{v:"woman",l:"👩 Mujer"},{v:"man",l:"👨 Hombre"},{v:"nb",l:"🧑 No definido"}].map(g=>`<button onclick="setAvG('${g.v}')" style="flex:1;border:2px solid ${c.gender===g.v?"#00897B":"#ddd"};border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;background:${c.gender===g.v?"#E8F5E9":"transparent"};color:${c.gender===g.v?"#00535E":"#555"}">${g.l}</button>`).join("")}
+          ${[{v:"woman",l:"👩 Mujer"},{v:"man",l:"👨 Hombre"},{v:"nb",l:"🧑 No definido"}].map(g=>`<button onclick="setAvG('${g.v}')" data-av-gender="${g.v}" style="flex:1;border:2px solid ${c.gender===g.v?"#00897B":"#ddd"};border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;background:${c.gender===g.v?"#E8F5E9":"transparent"};color:${c.gender===g.v?"#00535E":"#555"}">${g.l}</button>`).join("")}
         </div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Tono de piel</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${SKINS.map(s=>colorBtn(s.v,c.skin===s.v,`setAv('skin','${s.v}')`)).join("")}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${SKINS.map(s=>colorBtn(s.v,c.skin===s.v,"skin")).join("")}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Cabello</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${hairs.map(h=>`<button onclick="setAv('hair','${h.v}')" style="${btnStyle(c.hair===h.v)}">${h.l}</button>`).join("")}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${hairs.map(h=>`<button onclick="setAv('hair','${h.v}')" data-av-key="hair" data-av-val="${h.v}" style="${btnStyle(c.hair===h.v)}">${h.l}</button>`).join("")}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Color de cabello</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${HAIR_COLORS.map(h=>colorBtn(h.v,c.hairColor===h.v,`setAv('hairColor','${h.v}')`)).join("")}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${HAIR_COLORS.map(h=>colorBtn(h.v,c.hairColor===h.v,"hairColor")).join("")}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Ropa</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${outfits.map(o=>`<button onclick="setAv('outfit','${o.v}')" style="${btnStyle(c.outfit===o.v)}">${o.l}</button>`).join("")}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${outfits.map(o=>`<button onclick="setAv('outfit','${o.v}')" data-av-key="outfit" data-av-val="${o.v}" style="${btnStyle(c.outfit===o.v)}">${o.l}</button>`).join("")}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Color de ropa</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${OUTFIT_COLORS.map(o=>colorBtn(o.v,c.outfitColor===o.v,`setAv('outfitColor','${o.v}')`)).join("")}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${OUTFIT_COLORS.map(o=>colorBtn(o.v,c.outfitColor===o.v,"outfitColor")).join("")}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Accesorios</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${ACCS.map(a=>`<button onclick="setAv('acc','${a.v}')" style="${btnStyle(c.acc===a.v)}">${a.l}</button>`).join("")}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${ACCS.map(a=>`<button onclick="setAv('acc','${a.v}')" data-av-key="acc" data-av-val="${a.v}" style="${btnStyle(c.acc===a.v)}">${a.l}</button>`).join("")}</div>
       </div>
       ${showFacial?`<div style="margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Vello facial</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${FACIAL.map(f=>`<button onclick="setAv('facialHair','${f.v}')" style="${btnStyle(c.facialHair===f.v)}">${f.l}</button>`).join("")}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${FACIAL.map(f=>`<button onclick="setAv('facialHair','${f.v}')" data-av-key="facialHair" data-av-val="${f.v}" style="${btnStyle(c.facialHair===f.v)}">${f.l}</button>`).join("")}</div>
       </div>`:""}
       <div style="margin-bottom:20px">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Fondo</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${BGS.map(b=>sqBtn(b.v,c.bg===b.v,`setAv('bg','${b.v}')`)).join("")}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${BGS.map(b=>sqBtn(b.v,c.bg===b.v,"bg")).join("")}</div>
       </div>
       <button onclick="saveAndClose()" style="width:100%;background:#00897B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer">✅ Guardar mi avatar</button>
     </div>`;
   }
 
+  function updateButtons(){
+    const c=getAvatar();
+    // Actualizar preview
+    const img=document.getElementById("avPreview");
+    if(img) img.src=avatarUrl(c,state.email||"preview");
+    // Actualizar estilos de botones
+    modal.querySelectorAll("[data-av-key]").forEach(btn=>{
+      const k=btn.getAttribute("data-av-key");
+      const v=btn.getAttribute("data-av-val");
+      const selected=String(c[k])===String(v);
+      if(btn.getAttribute("data-av-type")==="color"){
+        btn.style.border=`3px solid ${selected?"#00897B":"transparent"}`;
+      } else if(btn.getAttribute("data-av-type")==="sq"){
+        btn.style.border=`3px solid ${selected?"#00897B":"transparent"}`;
+      } else {
+        btn.style.border=`2px solid ${selected?"#00897B":"#eee"}`;
+        btn.style.background=selected?"#E8F5E9":"transparent";
+        btn.style.color=selected?"#00535E":"#555";
+      }
+    });
+    // Actualizar botones de género
+    modal.querySelectorAll("[data-av-gender]").forEach(btn=>{
+      const g=btn.getAttribute("data-av-gender");
+      const selected=c.gender===g;
+      btn.style.border=`2px solid ${selected?"#00897B":"#ddd"}`;
+      btn.style.background=selected?"#E8F5E9":"transparent";
+      btn.style.color=selected?"#00535E":"#555";
+    });
+  }
+
   window.setAv=function(k,v){
     state.avatar={...getAvatar(),[k]:v};
-    const img=document.getElementById("avPreview");
-    if(img) img.src=avatarUrl(getAvatar(),state.email||"preview");
-    render();
+    updateButtons();
   };
   window.setAvG=function(g){
     const def={woman:{hair:"longButNotTooLong",outfit:"blazerAndSweater",facialHair:"none"},man:{hair:"shortFlat",outfit:"blazerAndShirt",facialHair:"none"},nb:{hair:"curly",outfit:"hoodie",facialHair:"none"}};
