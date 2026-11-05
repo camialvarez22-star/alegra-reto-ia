@@ -556,18 +556,15 @@ const MISSIONS = {
     subtitle: "Nada de clics al azar: cada misión de hoy exige un resultado concreto, no solo abrir la pantalla.",
     accent: "#00D6BC", emoji: "🧩",
     items: [
-      { id:"d1-diagnostico", title:"Haz las 3 preguntas que más usan los contadores", desc:"Abre el Agente de Alegra y hazle estas 3 preguntas (una por una, en conversaciones separadas):\n\n📊 Pregunta 1 — Ventas: «¿Cuánto vendí el mes pasado y quiénes fueron mis 3 mejores clientes?»\n\n💰 Pregunta 2 — Cartera: «¿Quién me debe dinero? Muéstrame las facturas vencidas hace más de 30 días ordenadas de mayor a menor.»\n\n📋 Pregunta 3 — Balance: «Genera el estado de situación financiera del mes actual con activos, pasivos y patrimonio.»\n\nNo vale una pregunta genérica — el Agente debe darte números reales de tu empresa.", pts:5, verify:"amplitude", event:"agent_message_sent",
-        link:{url:"https://app.alegra.com",label:"Abrir Alegra"}, linkNote:"Busca el ícono del Agente en el menú lateral.",
-        helpLink:{url:"https://ayuda.alegra.com/col/agente-ia-alegra",label:"📖 Cómo usar el Agente de IA"} },
-      { id:"d1-mcp", title:"Conecta vía MCP y úsalo desde afuera", desc:"Conecta Alegra con Claude o ChatGPT vía MCP y, desde esa herramienta (no desde Alegra), pídele tus facturas pendientes de cobro. Una vez conectado, haz clic en el botón de abajo para notificar al equipo.", pts:6, verify:"amplitude", event:"mcp_connection_created",
-        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-claude",label:"Ver cómo conectar"},
-        helpLink:{url:"https://ayuda.alegra.com/col/que-es-mcp-alegra",label:"📖 ¿Qué es el MCP de Alegra?"} },
+      { id:"d1-diagnostico", title:"Diagnóstico de 3 cifras con el Agente", desc:"Pídele al Agente exactamente estas 3 cifras de tu negocio: tu cartera vencida, tu gasto más alto del mes y tu margen bruto. No vale una pregunta genérica.", pts:5, verify:"amplitude", event:"agent_message_sent",
+        link:{url:"https://app.alegra.com",label:"Abrir Alegra"}, linkNote:"Busca el ícono del Agente en el menú." },
+      { id:"d1-mcp", title:"Conecta vía MCP y úsalo desde afuera", desc:"Conecta Alegra con Claude o ChatGPT vía MCP y, desde esa herramienta (no desde Alegra), pídele tus facturas pendientes de cobro.", pts:6, verify:"amplitude", event:"mcp_connection_created",
+        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-claude",label:"Ver cómo conectar"} },
       { id:"d1-funcionalidad", title:"Activa tu funcionalidad #1 — a fondo", desc:"No basta con abrirla una vez: hazlo al nivel que te pide cada opción.", pts:7, verify:"choice",
         choices:["Conciliaciones bancarias (mínimo 10 movimientos)","Catálogo de cuentas (crea y clasifica 2 cuentas nuevas)","Centros de costos (asígnalo a mínimo 3 facturas o gastos)"],
         choiceLinks:["https://app.alegra.com/conciliation","https://app.alegra.com/category","https://app.alegra.com/cost-center"],
         choiceEvents:["bank_reconciliation_created","category_created","cost_center_assigned"],
-        choiceMinCounts:[10,2,3],
-        choiceHelpLinks:["https://ayuda.alegra.com/col/conciliacion-bancaria","https://ayuda.alegra.com/col/catalogo-de-cuentas","https://ayuda.alegra.com/col/centros-de-costos"] },
+        choiceMinCounts:[10,2,3] },
       { id:"d1-academy", title:"Curso Academy: IA para Pymes", desc:"Completa el taller «Cómo usar la IA para automatizar las tareas de tu negocio» en Alegra Academy y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/ia-para-pymes/",label:"Ir al curso"},
         uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
@@ -582,26 +579,21 @@ const MISSIONS = {
     accent: "#06ECD0", emoji: "⚙️",
     items: [
       { id:"d2-nota-credito", title:"Flujo con nota crédito", desc:"Cotización → factura → cobro, y aplícale una nota crédito parcial a esa factura. Sube una captura que muestre la factura con la nota crédito ya aplicada.", pts:10, verify:"self",
-        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"},
-        helpLink:{url:"https://ayuda.alegra.com/col/nota-credito-de-venta",label:"📖 Cómo crear una nota crédito"} },
-      { id:"d2-conciliacion-mes", title:"Concilia el mes completo", desc:"Concilia un mes calendario completo de tu cuenta bancaria: mínimo 15 movimientos, no solo un par sueltos. Cuando termines, notifica al equipo con el botón de abajo.", pts:8, verify:"amplitude", event:"bank_reconciliation_created", minCount:15,
-        link:{url:"https://app.alegra.com/conciliation",label:"Abrir Conciliaciones"},
-        helpLink:{url:"https://ayuda.alegra.com/col/conciliacion-bancaria",label:"📖 Cómo conciliar tu cuenta bancaria"} },
-      { id:"d2-analisis", title:"Análisis comparativo mes a mes", desc:"Pídele al Agente que compare tus ventas o gastos de este mes contra el anterior, y que te explique qué cambió y por qué. Cuando termines, notifica al equipo con el botón de abajo.", pts:6, verify:"amplitude", event:"agent_analysis_requested",
-        link:{url:"https://app.alegra.com",label:"Abrir Alegra"},
-        helpLink:{url:"https://ayuda.alegra.com/col/agente-ia-alegra",label:"📖 Cómo usar el Agente de IA"} },
-      { id:"d2-funcionalidad", title:"Activa tu funcionalidad #2", desc:"Elige una distinta a la de ayer. Cuando la actives, notifica al equipo con el botón de abajo.", pts:5, verify:"choice",
+        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"} },
+      { id:"d2-conciliacion-mes", title:"Concilia el mes completo", desc:"Concilia un mes calendario completo de tu cuenta bancaria: mínimo 15 movimientos, no solo un par sueltos.", pts:8, verify:"amplitude", event:"bank_reconciliation_created", minCount:15,
+        link:{url:"https://app.alegra.com/conciliation",label:"Abrir Conciliaciones"} },
+      { id:"d2-analisis", title:"Análisis comparativo mes a mes", desc:"Pídele al Agente que compare tus ventas o gastos de este mes contra el anterior, y que te explique qué cambió y por qué.", pts:6, verify:"amplitude", event:"agent_analysis_requested",
+        link:{url:"https://app.alegra.com",label:"Abrir Alegra"} },
+      { id:"d2-funcionalidad", title:"Activa tu funcionalidad #2", desc:"Elige una distinta a la de ayer.", pts:5, verify:"choice",
         choices:["Comprobantes contables","Crear saldos iniciales","Balance de prueba por tercero"],
-        choiceLinks:["https://app.alegra.com/ledger/documents","https://app.alegra.com/journal/view-opening-balance","https://app.alegra.com/report/trial-balance-by-third"],
-        choicePaths:[null,null,null],
-        choiceEvents:["journal_entry_created","opening_balance_created","trial_balance_viewed"],
-        choiceHelpLinks:["https://ayuda.alegra.com/col/comprobantes-contables","https://ayuda.alegra.com/col/saldos-iniciales","https://ayuda.alegra.com/col/balance-de-prueba-por-tercero"] },
-      { id:"d2-academy", title:"Curso Academy: Conecta tu IA con Alegra", desc:"Completa el taller «Conecta tu IA con Alegra y eleva el nivel de tu operación» y sube tu certificado a la carpeta de Drive. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
+        choiceLinks:["https://app.alegra.com/ledger/documents","https://app.alegra.com/journal/view-opening-balance",null],
+        choicePaths:[null,null,"Reportes > Contables > Balance de prueba por tercero"],
+        choiceEvents:["journal_entry_created","opening_balance_created","trial_balance_viewed"] },
+      { id:"d2-academy", title:"Curso Academy: Conecta tu IA con Alegra", desc:"Completa el taller «Conecta tu IA con Alegra y eleva el nivel de tu operación» y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/taller-conecta-tu-ia-con-alegra/",label:"Ir al curso"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado Día 2"} },
-      { id:"d2-bonus", bonus:true, title:"Bonus: automatiza un cobro", desc:"Configura cobro automático o factura recurrente. Cuando termines, notifica al equipo con el botón de abajo.", pts:3, verify:"amplitude", event:"recurring_invoice_created",
-        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"},
-        helpLink:{url:"https://ayuda.alegra.com/col/facturas-recurrentes",label:"📖 Cómo configurar facturas recurrentes"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
+      { id:"d2-bonus", bonus:true, title:"Bonus: automatiza un cobro", desc:"Configura cobro automático o factura recurrente.", pts:3, verify:"self",
+        link:{url:"https://app.alegra.com/invoice",label:"Abrir Facturas"} },
     ],
   },
   3: {
@@ -609,29 +601,25 @@ const MISSIONS = {
     subtitle: "El día más exigente: esto es lo que separa a quien de verdad se ganó el premio de quien solo pasó por aquí.",
     accent: "#50EEA2", emoji: "🏆",
     items: [
-      { id:"d3-estados-comparados", title:"Compara dos periodos completos", desc:"Genera el Estado de Resultados Y el Balance General, compara dos periodos consecutivos y pídele al Agente que te explique la variación más grande. Cuando termines, notifica al equipo.", pts:8, verify:"amplitude", event:"profit_loss_viewed",
-        link:{url:"https://app.alegra.com/report/profit-and-loss",label:"Abrir Estado de Resultados"},
-        helpLink:{url:"https://ayuda.alegra.com/col/estado-de-resultados",label:"📖 Cómo ver el Estado de Resultados"} },
+      { id:"d3-estados-comparados", title:"Compara dos periodos completos", desc:"Genera el Estado de Resultados Y el Balance General, compara dos periodos consecutivos y pídele al Agente que te explique la variación más grande.", pts:8, verify:"amplitude", event:"profit_loss_viewed",
+        link:{url:"https://app.alegra.com/report/profit-and-loss",label:"Abrir Estado de Resultados"} },
       { id:"d3-cierre-completo", title:"Cierre contable real de un periodo", desc:"Haz el cierre de cuentas por tercero de un periodo completo. Sube una captura que muestre el cierre ya aplicado, no solo iniciado.", pts:10, verify:"self",
-        link:{url:"https://app.alegra.com/accounting/closing-by-third-party",label:"Abrir Cierre por tercero"},
-        helpLink:{url:"https://ayuda.alegra.com/col/cierre-contable-por-tercero",label:"📖 Cómo hacer el cierre contable"} },
+        link:{url:"https://app.alegra.com/accounting/closing-by-third-party",label:"Abrir Cierre por tercero"} },
       { id:"d3-mcp-encadenado", title:"Flujo MCP de 2 pasos encadenados", desc:"Encadena 2 acciones automáticas vía MCP (ej: generar un reporte Y guardarlo en Drive, o crear una factura Y notificarla en Slack). Sube una captura del resultado completo.", pts:8, verify:"self",
-        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-chatgpt",label:"Ver cómo conectar"},
-        helpLink:{url:"https://ayuda.alegra.com/col/que-es-mcp-alegra",label:"📖 ¿Qué es el MCP de Alegra?"} },
-      { id:"d3-funcionalidad", title:"Activa tu funcionalidad #3", desc:"Elige una distinta a las de Día 1 y 2. Cuando la actives, notifica al equipo.", pts:5, verify:"choice",
+        link:{url:"https://ayuda.alegra.com/col/conectar-alegra-chatgpt",label:"Ver cómo conectar"} },
+      { id:"d3-funcionalidad", title:"Activa tu funcionalidad #3", desc:"Elige una distinta a las de Día 1 y 2.", pts:5, verify:"choice",
         choices:["Informe contador","Libro diario","Auxiliar por tercero"],
-        choiceLinks:["https://app.alegra.com/report/accountant","https://app.alegra.com/report/ledger-journals","https://app.alegra.com/report/third-party-ledger"],
-        choicePaths:[null,null,null],
-        choiceEvents:["accountant_report_viewed","journal_viewed","third_party_ledger_viewed"],
-        choiceHelpLinks:["https://ayuda.alegra.com/col/informe-contador","https://ayuda.alegra.com/col/libro-diario","https://ayuda.alegra.com/col/auxiliar-por-tercero"] },
-      { id:"d3-academy", title:"Curso Academy: IA para Contadores", desc:"Completa el «Curso de Inteligencia Artificial para Contadores» y sube tu certificado a la carpeta de Drive. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
+        choiceLinks:[null,"https://app.alegra.com/report/ledger-journals",null],
+        choicePaths:["Agente > Reportes > Para trabajar > Informe contador",null,"Reportes > Contables > Auxiliar por tercero"],
+        choiceEvents:["accountant_report_viewed","journal_viewed","third_party_ledger_viewed"] },
+      { id:"d3-academy", title:"Curso Academy: IA para Contadores", desc:"Completa el «Curso de Inteligencia Artificial para Contadores» y sube tu certificado. Obligatorio para competir por los premios de la semana.", pts:10, verify:"manual",
         link:{url:"https://academy.alegra.com/colombia/courses/ia-para-contadores/",label:"Ir al curso"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado Día 3"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
       { id:"d3-bonus", bonus:true, title:"Bonus: graba un video de 60s", desc:"Cuéntale a otros contadores cómo la IA cambió tu trabajo, con #RetoAlegra, y sube tu video a la carpeta.", pts:8, verify:"manual",
-        uploadLink:{url:"https://drive.google.com/drive/folders/176VnOXK-wt9JIV5etmjeY9vIGbQDtZE7?usp=sharing",label:"📂 Subir video"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/176VnOXK-wt9JIV5etmjeY9vIGbQDtZE7?usp=sharing",label:"Subir video"} },
       { id:"d3-academy-bonus", bonus:true, title:"Bonus: un curso extra de Academy, el que quieras", desc:"Completa cualquier otro curso del catálogo de Alegra Academy, distinto a los 3 obligatorios del reto, y sube el certificado.", pts:8, verify:"manual",
         link:{url:"https://academy.alegra.com",label:"Ver catálogo de Academy"},
-        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"📂 Subir certificado"} },
+        uploadLink:{url:"https://drive.google.com/drive/folders/1kAq6yiU97Kuh9poOUXebJo8KOeHRDKGI?usp=sharing",label:"Subir certificado"} },
     ],
   },
 };
@@ -683,7 +671,7 @@ const TOTAL_POSSIBLE = Object.values(MISSIONS).reduce((s,d)=>s+d.items.reduce((a
 ============================================================ */
 const STORAGE_KEY = "aleRetoV2_contadores";
 let state = loadState();
-function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; if(!s.avatar) s.avatar={...AVATAR_DEFAULTS}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null,avatar:{...AVATAR_DEFAULTS}}; }
+function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null,avatar:{...AVATAR_DEFAULTS}}; }
 function saveState(){ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){} }
 function resetProgress(){ if(!confirm("¿Reiniciar tu progreso?")) return; const e=state.email,p=state.participantId,r=state.registered; state={done:{},choices:{},pending:{},activeDay:1,registered:r,participantId:p,email:e}; saveState(); if(sb&&p) syncToSupabase(); renderAll(); }
 function currentPoints(){ let t=0; for(const d of Object.values(MISSIONS)) for(const m of d.items) if(state.done[m.id]) t+=m.pts; return t; }
@@ -707,14 +695,16 @@ async function register(){
       reto_utm_source:u.utm_source||null,reto_utm_medium:u.utm_medium||null,reto_utm_campaign:u.utm_campaign||null,reto_utm_content:u.utm_content||null},{onConflict:"email"}).select().single();
     if(error) throw error;
     state.registered=true;state.email=email;state.participantId=data.id||email; saveState();
-    const el=document.getElementById("regStatus");
-    el.style.display="block";
-    el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-      ${avatarBadge(getAvatar(),64,true)}
+    const elReg=document.getElementById("regStatus");
+    if(!state.avatar) state.avatar={...AVATAR_DEFAULTS};
+    saveState();
+    elReg.style.display="block";
+    elReg.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+      <div style="position:relative;cursor:pointer" onclick="openAvatarEditor()">${pixelChar(getAvatar(),64)}<span style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px">✏️</span></div>
       <div>
-        <div style="font-weight:700;color:var(--success);font-size:14px">✅ ¡Bienvenido al reto!</div>
+        <div style="font-weight:700;color:var(--success)">✅ ¡Bienvenido al reto!</div>
         <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ya puedes empezar las misiones.</div>
-        <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
+        <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
       </div>
     </div>`;
     renderAll(); loadLeaderboard();
@@ -760,9 +750,10 @@ function renderLeaderboardRows(rows){
   const el=document.getElementById("lbRows");
   if(!rows.length){el.innerHTML='<div class="lb-empty">Aún no hay participantes registrados.</div>';return;}
   el.innerHTML=rows.map((r,i)=>{
-    const av = (r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:(r.email===state.email?getAvatar():AVATAR_DEFAULTS);
-    const isMe = r.email===state.email;
-    return `<div class="lb-row" style="${isMe?"background:var(--accent-soft);border-radius:10px;":""}"><span class="lb-rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} <span>${esc(r.name)}${isMe?' <span style="font-size:10px;color:var(--accent-strong);font-weight:700">TÚ</span>':""}</span></span><span class="lb-pts">${r.points||0}</span></div>`;
+    const av=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:(r.email===state.email?getAvatar():AVATAR_DEFAULTS);
+    const isMe=r.email===state.email;
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1;
+    return `<div class="lb-row" style="${isMe?"background:var(--accent-soft);border-radius:10px;":""}"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} ${esc(r.name)}${isMe?' <span style="font-size:10px;color:var(--accent-strong);font-weight:700"> TÚ</span>':""}</span><span class="lb-pts">${r.points||0}</span></div>`;
   }).join("");
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -791,9 +782,7 @@ function renderProgress(){
   document.getElementById("barFill").style.width=Math.min(100,(pts/TOTAL_POSSIBLE)*100)+"%";
   document.getElementById("nextLevelNote").textContent=next?`Te faltan ${next.min-pts} pts para ${next.name}`:"¡Llegaste al tope del reto! 🎉";
 }
-function isDayUnlocked(dayNum){
-  return true; // Todos los días están disponibles desde el inicio
-}
+function isDayUnlocked(dayNum){ return true; }
 function renderTabs(){
   const el=document.getElementById("dayTabs");el.innerHTML="";
   Object.keys(MISSIONS).forEach(k=>{const d=MISSIONS[k],unlocked=isDayUnlocked(+k),earned=d.items.reduce((s,m)=>s+(state.done[m.id]?m.pts:0),0),total=d.items.reduce((s,m)=>s+m.pts,0),btn=document.createElement("button");btn.className="day-tab";btn.setAttribute("aria-selected",String(+k===state.activeDay));btn.innerHTML=`<span class="dot" style="background:${d.accent};box-shadow:0 0 6px ${d.accent}"></span>${d.label}${unlocked?"":" 🔒"} <span class="pts">${earned}/${total}</span>`;btn.onclick=()=>{state.activeDay=+k;saveState();renderAll()};el.appendChild(btn)});
@@ -813,19 +802,7 @@ function verifyLabel(v){
   if(v==="manual") return "El equipo lo revisa en la carpeta compartida y te asigna los puntos";
   return "Sube tu evidencia y el equipo te asigna los puntos";
 }
-function linkRowHtml(m){
-  let html="<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0'>";
-  if(m.link){
-    const href=withUtm(m.link.url,m.id);
-    const note=m.linkNote?`<span style="font-size:11px;color:var(--text-faint)">${m.linkNote}</span>`:"";
-    html+=`<a href="${href}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;border-radius:8px;padding:6px 14px;background:var(--accent-strong);white-space:nowrap">${m.link.label} →</a>${note}`;
-  }
-  if(m.helpLink){
-    html+=`<a href="${m.helpLink.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;background:var(--surface-2);white-space:nowrap">${m.helpLink.label}</a>`;
-  }
-  html+="</div>";
-  return html;
-}
+function linkRowHtml(m){if(!m.link)return"";const n=m.linkNote?` <span class="choice-row-path">${m.linkNote}</span>`:"";const href=withUtm(m.link.url,m.id);return`<div class="choice-row"><a class="mission-link" href="${href}" target="_blank" rel="noopener">${m.link.label} →</a>${n}</div>`}
 
 function lockedNoteHtml(){
   return `<div class="mission-actions"><span class="mission-tag locked-tag">🔒 Se desbloquea al completar las misiones obligatorias del día anterior</span></div>`;
@@ -846,33 +823,14 @@ function renderMissions(){
     if(m.verify==="choice"){
       const ch=state.choices[m.id];
       act+=`<div class="choice-group">`+m.choices.map((c,i)=>{
-        const url=m.choiceLinks&&m.choiceLinks[i],path=m.choicePaths&&m.choicePaths[i],hlp=m.choiceHelpLinks&&m.choiceHelpLinks[i];
-        const helpBtn=hlp?`<a href="${hlp}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--text-faint);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;background:var(--surface-2)">📖 Ayuda</a>`:"";
-        const alegraBtn=url?`<a href="${withUtm(url,m.id+":"+c)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--accent-strong);text-decoration:none;border:1px solid var(--accent-strong);border-radius:6px;padding:3px 8px;background:transparent">Abrir en Alegra →</a>`:"";
-        const pathTxt=path?`<span class="choice-row-path" style="font-size:11px">Ruta: ${path}</span>`:"";
-        const lk=`<span style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap">${alegraBtn}${pathTxt}${helpBtn}</span>`;
+        const url=m.choiceLinks&&m.choiceLinks[i],path=m.choicePaths&&m.choicePaths[i];
+        const lk=url?`<a class="mission-link" href="${withUtm(url,m.id+":"+c)}" target="_blank" rel="noopener">Abrir en Alegra →</a>`:(path?`<span class="choice-row-path">Ruta: ${path}</span>`:"");
         const clickAttr=interactive?`onclick="chooseOption('${m.id}','${c.replace(/'/g,"\\'")}')"`:"";
         return`<div class="choice-row"><span class="choice-option ${ch===c?"selected":""}${interactive?"":" locked-option"}" ${clickAttr}>${c}</span>${lk}</div>`;
       }).join("")+`</div>`;
       if(!done){
-        if(interactive){
-          if(ch){
-            act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" onclick="completeMission(${state.activeDay},'${m.id}')">✅ Ya lo hice — marcar como completada</button></div>`;
-          } else {
-            act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-faint)">👆 Elige una opción arriba para continuar</span></div>`;
-          }
-        } else {
-          act+=lockedNoteHtml();
-        }
-      }
-    }else if(m.verify==="amplitude"){
-      act+=linkRowHtml(m);
-      if(done){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado automáticamente — puntos asignados</span></div>`;
-      }else if(interactive){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-muted)">⚡ Los puntos se asignan solos en cuanto uses esta función en Alegra</span></div>`;
-      }else{
-        act+=lockedNoteHtml();
+        if(interactive) act+=`<div class="mission-actions"><button class="btn btn-outline btn-sm" ${ch?"":"disabled"} onclick="completeMission(${state.activeDay},'${m.id}')">Marcar como completada</button></div>`;
+        else act+=lockedNoteHtml();
       }
     }else if(m.verify==="self"){
       act+=linkRowHtml(m);
@@ -892,19 +850,13 @@ function renderMissions(){
       }else if(pending){
         act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--accent-strong)">⏳ Enviado, en revisión por el equipo</span></div>`;
       }else if(interactive){
-        act+=`<div class="mission-actions" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">${m.uploadLink?`<a href="${withUtm(m.uploadLink.url,m.id+"-evidencia")}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;border-radius:8px;padding:6px 14px;background:#6366F1;white-space:nowrap">📂 ${m.uploadLink.label} →</a>`:""}<button class="btn btn-outline btn-sm" onclick="claimManual(${state.activeDay},'${m.id}')">✅ Ya lo subí, revísenlo</button></div>`;
+        act+=`<div class="mission-actions">${m.uploadLink?`<a class="mission-link" href="${withUtm(m.uploadLink.url,m.id+"-evidencia")}" target="_blank" rel="noopener">${m.uploadLink.label} →</a>`:""} <button class="btn btn-outline btn-sm" onclick="claimManual(${state.activeDay},'${m.id}')">Ya lo subí, revísenlo</button></div>`;
       }else{
         act+=lockedNoteHtml();
       }
     }else{
       act+=linkRowHtml(m);
-      if(done){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--success)">✓ Verificado automáticamente — puntos asignados</span></div>`;
-      }else if(interactive){
-        act+=`<div class="mission-actions"><span class="mission-tag" style="color:var(--text-muted)">⚡ Los puntos se asignan solos en cuanto uses esta función en Alegra</span></div>`;
-      }else{
-        act+=lockedNoteHtml();
-      }
+      if(locked) act+=lockedNoteHtml();
     }
     const statusClass=done?"done":pending?"pending":(locked?"locked":"");
     const statusText=done?"Completada":pending?"En revisión":(locked?"Bloqueada":"Pendiente");
@@ -936,14 +888,6 @@ async function submitEvidence(day,missionId){
   }catch(e){ alert("No se pudo enviar la evidencia: "+e.message); }
 }
 
-async function claimAmplitude(day,missionId){
-  if(!state.participantId){ alert("Regístrate con tu correo antes de reclamar esta misión."); return; }
-  if(!confirm("¿Ya realizaste esta acción en Alegra? El equipo lo verificará en Amplitude y te asignará los puntos.")) return;
-  if(sb){
-    try{ await sb.from("mission_submissions").upsert({participant_id:state.participantId,mission_id:missionId,day,file_url:null,status:"pending",submitted_at:new Date().toISOString(),note:"Verificar en Amplitude: evento de misión "+missionId+" para email "+state.email}); }catch(e){}
-  }
-  state.pending[missionId]=true; saveState(); renderAll();
-}
 async function claimManual(day,missionId){
   if(!state.participantId){ alert("Regístrate con tu correo antes de reclamar esta misión."); return; }
   if(!confirm("¿Ya subiste tu evidencia a la carpeta indicada? El equipo la va a revisar antes de darte los puntos.")) return;
@@ -955,144 +899,6 @@ async function claimManual(day,missionId){
 function renderLevels(){
   const pts=currentPoints(),grid=document.getElementById("levelsGrid");grid.innerHTML="";
   LEVELS.forEach(l=>{const reached=pts>=l.min,card=document.createElement("div");card.className="level-card"+(reached?" active":"");card.innerHTML=`<div class="badge">${l.badge}</div><h3>${l.name} · ${l.min}+ pts</h3><p>${l.reward}</p>`;grid.appendChild(card)});
-}
-
-/* ============================================================
-   AVATAR PIXEL ART — personalizable por el usuario
-============================================================ */
-const AVATAR_OPTIONS = {
-  skin:    { label:"Tono de piel", values:["#FDDBB4","#F5C397","#E8A87C","#C68642","#8D5524","#4A2912"], emoji:["👱","🧑","👩","🧔","👨‍🦱","👴"] },
-  hair:    { label:"Cabello", values:["bald","short_black","short_brown","short_blonde","long_black","long_brown","long_blonde","curly_black","curly_brown","afro"], labels:["Sin cabello","Corto negro","Corto marrón","Corto rubio","Largo negro","Largo marrón","Largo rubio","Rizado negro","Rizado marrón","Afro"] },
-  hairColor:{ label:"Color cabello", values:["#1a1a1a","#4a2800","#8B4513","#C4A35A","#E8D5A3","#FF6B6B","#6B6BFF","#A0A0A0"], emoji:["⚫","🟤","🟫","🟡","🌾","🔴","🔵","🩶"] },
-  outfit:  { label:"Outfit", values:["shirt_teal","shirt_blue","shirt_red","shirt_purple","blazer_black","blazer_green","hoodie_gray","hoodie_orange"], labels:["Camisa teal","Camisa azul","Camisa roja","Camisa morada","Blazer negro","Blazer verde","Hoodie gris","Hoodie naranja"] },
-  acc:     { label:"Accesorio", values:["none","glasses_round","glasses_rect","earring_l","earring_both","headband","cap","headphones"], labels:["Ninguno","Gafas redondas","Gafas cuadradas","Arete izq.","Aretes","Diadema","Gorra","Audífonos"] },
-  bg:      { label:"Fondo", values:["#001E3B","#00535E","#4A1580","#C62828","#1565C0","#2E7D32","#E65100","#37474F"], emoji:["🌑","🌊","💜","❤️","💙","💚","🟠","🩶"] }
-};
-const AVATAR_DEFAULTS = { skin:"#E8A87C", hair:"short_brown", hairColor:"#4a2800", outfit:"shirt_teal", acc:"none", bg:"#001E3B" };
-
-function getAvatar(){ return (state&&state.avatar) ? {...AVATAR_DEFAULTS,...state.avatar} : {...AVATAR_DEFAULTS}; }
-function saveAvatar(av){ state.avatar=av; saveState(); if(sb&&state.participantId){ try{ sb.from("participants").update({choices:{...state.choices,avatar:av}}).eq("email",state.email); }catch(e){} } }
-
-function pixelChar(av, size=48){
-  const a = {...AVATAR_DEFAULTS,...av};
-  const s = size, u = s/16; // unit = 1 pixel block
-  const r = (x,y,w,h,c) => `<rect x="${x*u}" y="${y*u}" width="${w*u}" height="${h*u}" fill="${c}"/>`;
-  const skin = a.skin, bg = a.bg;
-
-  // Hair color
-  const hc = a.hairColor||"#1a1a1a";
-
-  // Outfit colors
-  const outfitColors = {
-    shirt_teal:"#00897B", shirt_blue:"#1565C0", shirt_red:"#C62828", shirt_purple:"#6A1B9A",
-    blazer_black:"#212121", blazer_green:"#2E7D32", hoodie_gray:"#546E7A", hoodie_orange:"#E65100"
-  };
-  const oc = outfitColors[a.outfit]||"#00897B";
-  const isHoodie = a.outfit.startsWith("hoodie");
-  const isBlazer = a.outfit.startsWith("blazer");
-
-  // Hair shapes
-  const hairMap = {
-    bald: "",
-    short_black: r(5,3,6,2,hc)+r(4,4,8,1,hc),
-    short_brown: r(5,3,6,2,hc)+r(4,4,8,1,hc),
-    short_blonde: r(5,3,6,2,hc)+r(4,4,8,1,hc),
-    long_black: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
-    long_brown: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
-    long_blonde: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
-    curly_black: r(4,2,8,2,hc)+r(3,3,2,2,hc)+r(11,3,2,2,hc)+r(5,3,6,1,hc),
-    curly_brown: r(4,2,8,2,hc)+r(3,3,2,2,hc)+r(11,3,2,2,hc)+r(5,3,6,1,hc),
-    afro: r(3,1,10,4,hc)+r(2,3,2,3,hc)+r(12,3,2,3,hc)
-  };
-  const hairSvg = hairMap[a.hair]||hairMap.short_brown;
-
-  // Accessories
-  const accMap = {
-    none: "",
-    glasses_round: `<circle cx="${6.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/><circle cx="${9.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/>${r(7.5,6.8,0.5,0.4,"#333")}`,
-    glasses_rect: r(5,6.5,3,1.5,"none")+`<rect x="${5*u}" y="${6.5*u}" width="${3*u}" height="${1.5*u}" fill="none" stroke="#333" stroke-width="${0.4*u}"/><rect x="${8.5*u}" y="${6.5*u}" width="${3*u}" height="${1.5*u}" fill="none" stroke="#333" stroke-width="${0.4*u}"/>`,
-    earring_l: r(4,8,0.8,1.2,"#FFD700"),
-    earring_both: r(4,8,0.8,1.2,"#FFD700")+r(11.2,8,0.8,1.2,"#FFD700"),
-    headband: r(4,4,8,1,"#FF6B6B"),
-    cap: r(4,2,8,2,hc)+r(3,3,10,1,hc)+r(3,3,2,1,"#555"),
-    headphones: r(3,4,1,3,"#333")+r(12,4,1,3,"#333")+r(3,4,1.5,1.5,"#555")+r(11.5,4,1.5,1.5,"#555")
-  };
-  const accSvg = accMap[a.acc]||"";
-
-  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;border-radius:${u*2}px;flex-shrink:0">
-    ${r(0,0,16,16,bg)}
-    ${r(5,4,6,7,skin)}
-    ${r(4,5,1,5,skin)}${r(11,5,1,5,skin)}
-    ${r(6,6,1,1,"#333")}${r(9,6,1,1,"#333")}
-    ${r(6,8,4,1,"#c0796a")}
-    ${hairSvg}
-    ${accSvg}
-    ${r(4,11,8,2,oc)}
-    ${r(3,13,3,3,oc)}${r(10,13,3,3,oc)}
-    ${isHoodie?r(7,11,2,1,"#fff"):""}
-    ${isBlazer?r(7,11,1,3,"#fff")+r(8,11,1,3,"#fff"):""}
-  </svg>`;
-}
-
-function avatarSvg(nameOrAv, size=36){
-  if(typeof nameOrAv === "object") return pixelChar(nameOrAv, size);
-  return pixelChar({...AVATAR_DEFAULTS}, size);
-}
-
-// Modal de personalización de avatar
-function openAvatarEditor(){
-  const av = getAvatar();
-  const modal = document.createElement("div");
-  modal.id = "avatarModal";
-  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";
-  
-  function buildModal(){
-    const cur = getAvatar();
-    modal.innerHTML = `
-      <div style="background:var(--surface);border-radius:20px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h3 style="margin:0;font-size:18px;font-weight:700">🎮 Crea tu avatar pixel art</h3>
-          <button onclick="document.getElementById('avatarModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
-        </div>
-        <div style="display:flex;justify-content:center;margin-bottom:20px">
-          <div id="avPreview">${pixelChar(cur,96)}</div>
-        </div>
-        ${Object.entries(AVATAR_OPTIONS).map(([key,opt])=>`
-          <div style="margin-bottom:14px">
-            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">${opt.label}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px">
-              ${opt.values.map((v,i)=>{
-                const isSelected = (key==="hair"?cur.hair:key==="outfit"?cur.outfit:key==="acc"?cur.acc:key==="skin"?cur.skin:key==="hairColor"?cur.hairColor:cur.bg)===v;
-                const label = opt.emoji?opt.emoji[i]:(opt.labels?opt.labels[i]:v);
-                return `<button onclick="updateAv('${key}','${v}')" style="border:2px solid ${isSelected?"var(--accent-strong)":"var(--border)"};border-radius:8px;padding:4px 8px;font-size:${opt.emoji?"18px":"11px"};cursor:pointer;background:${isSelected?"var(--accent-soft)":"var(--surface-2)"};color:var(--text);min-width:36px;transition:all .15s" title="${opt.labels?opt.labels[i]:v}">${key==="skin"?`<span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${v}"></span>`:(key==="bg"?`<span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:${v}"></span>`:label)}</button>`;
-              }).join("")}
-            </div>
-          </div>
-        `).join("")}
-        <button onclick="confirmAvatar()" style="width:100%;background:var(--accent-strong);color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px">✅ Guardar mi avatar</button>
-      </div>`;
-  }
-  
-  window.updateAv = function(key, val){
-    const cur = getAvatar();
-    cur[key]=val;
-    state.avatar=cur;
-    buildModal();
-  };
-  
-  window.confirmAvatar = function(){
-    saveAvatar(getAvatar());
-    modal.remove();
-    renderAll();
-  };
-  
-  buildModal();
-  document.body.appendChild(modal);
-}
-
-function avatarBadge(av, size=36, editable=false){
-  const editBtn = editable ? `<button onclick="openAvatarEditor()" style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Editar avatar">✏️</button>` : "";
-  return `<div style="position:relative;display:inline-block">${pixelChar(av||AVATAR_DEFAULTS,size)}${editBtn}</div>`;
 }
 
 /* ============================================================
@@ -1129,8 +935,8 @@ function renderAdminRows(rows){
   if(!rows.length){ el.innerHTML=`<div class="lb-empty">Sin participantes de ${PRIZE_COUNTRY_RESTRICTION} esta semana todavía.</div>`; return; }
   el.innerHTML=rows.map((r,i)=>{
     const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1);
-    const av=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:AVATAR_DEFAULTS;
-    return `<div class="lb-row admin-row"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} ${esc(r.name)}</span><span class="lb-country">${esc(r.email)}</span><span class="lb-pts">${r.points||0}</span></div>`;
+    const avA=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:AVATAR_DEFAULTS;
+    return `<div class="lb-row admin-row"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(avA,36)} ${esc(r.name)}</span><span class="lb-country">${esc(r.email)}</span><span class="lb-pts">${r.points||0}</span></div>`;
   }).join("");
 }
 async function refreshWeeklyResults(){
@@ -1157,50 +963,101 @@ renderAll();
 renderHeroPrizes();
 initPrizeTicker();
 if(sb) loadLeaderboard();
-if(state.registered){
-  document.getElementById("regEmail").value=state.email||"";
-  document.getElementById("registerForm").style.display="none";
-  const el=document.getElementById("regStatus");
-  el.style.display="block";
-  el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    ${avatarBadge(getAvatar(),56,true)}
-    <div>
-      <div style="font-weight:700;color:var(--success)">✅ Ya estás registrado</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${esc(state.email||"")}</div>
-      <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
-    </div>
-  </div>`;
-}
+if(state.registered){document.getElementById("regEmail").value=state.email||"";document.getElementById("registerForm").style.display="none";showRegStatus("✅ Ya estás registrado.",true)}
 checkAdminRoute();
 
 
 function showView(){
-  const h = location.hash.replace("#","").split("?")[0].trim();
+  const h = location.hash.replace("#","");
   const introEl = document.getElementById("view-intro");
   const retoEl = document.getElementById("view-reto");
-  const showReto = (h === "reto" || h === "admin" || h === "ranking");
-  if(introEl) introEl.style.display = showReto ? "none" : "";
-  if(retoEl) retoEl.style.display = showReto ? "" : "none";
+  const showReto = (h !== "" && h !== "intro");
+  introEl.style.display = showReto ? "none" : "";
+  retoEl.style.display = showReto ? "" : "none";
 }
 
-document.addEventListener("click", function(e){
-  const a = e.target.closest("a[href='#reto']");
-  if(a){
-    e.preventDefault();
-    location.hash = "reto";
+/* ============================================================
+   AVATAR PIXEL ART
+============================================================ */
+const AVATAR_DEFAULTS = { skin:"#E8A87C", hair:"short", hairColor:"#4a2800", outfit:"teal", acc:"none", bg:"#001E3B" };
+
+function getAvatar(){ return (state&&state.avatar)?{...AVATAR_DEFAULTS,...state.avatar}:{...AVATAR_DEFAULTS}; }
+
+function pixelChar(av, size=48){
+  const a={...AVATAR_DEFAULTS,...(av||{})};
+  const u=size/16;
+  const r=(x,y,w,h,c)=>`<rect x="${x*u}" y="${y*u}" width="${w*u}" height="${h*u}" fill="${c}"/>`;
+  const skin=a.skin, bg=a.bg, hc=a.hairColor||"#1a1a1a";
+  const oc={teal:"#00897B",blue:"#1565C0",red:"#C62828",purple:"#6A1B9A",black:"#212121",green:"#2E7D32",gray:"#546E7A",orange:"#E65100"}[a.outfit]||"#00897B";
+  const hairSvg={
+    short:r(5,3,6,2,hc)+r(4,4,8,1,hc),
+    long:r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc),
+    curly:r(4,2,8,2,hc)+r(3,3,2,2,hc)+r(11,3,2,2,hc),
+    afro:r(3,1,10,4,hc)+r(2,3,2,3,hc)+r(12,3,2,3,hc),
+    bald:""
+  }[a.hair]||r(5,3,6,2,hc)+r(4,4,8,1,hc);
+  const accSvg={
+    none:"",
+    glasses:`<circle cx="${6.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/><circle cx="${9.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/>`,
+    earrings:r(4,8,0.8,1.2,"#FFD700")+r(11.2,8,0.8,1.2,"#FFD700"),
+    cap:r(3,3,10,1,hc)+r(4,2,8,1,hc),
+    headphones:r(3,4,1,3,"#333")+r(12,4,1,3,"#333")
+  }[a.acc]||"";
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;border-radius:${u*2}px;flex-shrink:0">
+    ${r(0,0,16,16,bg)}
+    ${r(5,4,6,7,skin)}${r(4,5,1,5,skin)}${r(11,5,1,5,skin)}
+    ${r(6,6,1,1,"#333")}${r(9,6,1,1,"#333")}
+    ${r(6,8,4,1,"#c0796a")}
+    ${hairSvg}${accSvg}
+    ${r(4,11,8,2,oc)}${r(3,13,3,3,oc)}${r(10,13,3,3,oc)}
+  </svg>`;
+}
+
+function openAvatarEditor(){
+  const skins=["#FDDBB4","#F5C397","#E8A87C","#C68642","#8D5524","#4A2912"];
+  const hairs=["short","long","curly","afro","bald"];
+  const hairColors=["#1a1a1a","#4a2800","#8B4513","#C4A35A","#E8D5A3","#FF6B6B","#6B6BFF"];
+  const outfits=["teal","blue","red","purple","black","green","gray","orange"];
+  const accs=["none","glasses","earrings","cap","headphones"];
+  const bgs=["#001E3B","#00535E","#4A1580","#C62828","#1565C0","#2E7D32","#E65100","#37474F"];
+  const cur=getAvatar();
+
+  const modal=document.createElement("div");
+  modal.id="avModal";
+  modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto";
+
+  function render(){
+    const c=getAvatar();
+    modal.innerHTML=`<div style="background:var(--surface);border-radius:20px;padding:24px;max-width:380px;width:100%;max-height:90vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="margin:0;font-size:18px;font-weight:700">🎮 Tu avatar pixel art</h3>
+        <button onclick="document.getElementById('avModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:20px">${pixelChar(c,96)}</div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Tono de piel</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${skins.map(v=>`<button onclick="setAv('skin','${v}')" style="width:28px;height:28px;border-radius:50%;background:${v};border:3px solid ${c.skin===v?'var(--accent-strong)':'transparent'};cursor:pointer"></button>`).join('')}</div></div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Cabello</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${hairs.map(v=>`<button onclick="setAv('hair','${v}')" style="border:2px solid ${c.hair===v?'var(--accent-strong)':'var(--border)'};border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;background:${c.hair===v?'var(--accent-soft)':'var(--surface-2)'};">${v}</button>`).join('')}</div></div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Color cabello</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${hairColors.map(v=>`<button onclick="setAv('hairColor','${v}')" style="width:28px;height:28px;border-radius:50%;background:${v};border:3px solid ${c.hairColor===v?'var(--accent-strong)':'transparent'};cursor:pointer"></button>`).join('')}</div></div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Outfit</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${outfits.map(v=>`<button onclick="setAv('outfit','${v}')" style="border:2px solid ${c.outfit===v?'var(--accent-strong)':'var(--border)'};border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;background:${c.outfit===v?'var(--accent-soft)':'var(--surface-2)'};">${v}</button>`).join('')}</div></div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Accesorio</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${accs.map(v=>`<button onclick="setAv('acc','${v}')" style="border:2px solid ${c.acc===v?'var(--accent-strong)':'var(--border)'};border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;background:${c.acc===v?'var(--accent-soft)':'var(--surface-2)'};">${v}</button>`).join('')}</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase">Fondo</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${bgs.map(v=>`<button onclick="setAv('bg','${v}')" style="width:28px;height:28px;border-radius:6px;background:${v};border:3px solid ${c.bg===v?'var(--accent-strong)':'transparent'};cursor:pointer"></button>`).join('')}</div></div>
+      <button onclick="saveAndClose()" style="width:100%;background:var(--accent-strong);color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">✅ Guardar mi avatar</button>
+    </div>`;
   }
-  const b = e.target.closest("a[href='#'],.back-link");
-  if(b){
-    e.preventDefault();
-    location.hash = "";
-  }
-});
+
+  window.setAv=function(k,v){ state.avatar={...getAvatar(),[k]:v}; render(); };
+  window.saveAndClose=function(){ saveState(); if(sb&&state.participantId){ try{sb.from("participants").update({choices:{...state.choices,avatar:state.avatar}}).eq("email",state.email);}catch(e){} } modal.remove(); renderAll(); };
+  render();
+  document.body.appendChild(modal);
+}
 
 window.addEventListener("hashchange", function(){ showView(); checkAdminRoute(); window.scrollTo(0,0); });
-window.addEventListener("DOMContentLoaded", function(){
-  showView();
-  checkAdminRoute();
-});
+showView();
 </script>
 </body>
 </html>
