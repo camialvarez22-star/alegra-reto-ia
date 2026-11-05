@@ -691,22 +691,47 @@ async function register(){
 
   try{
     const u=state.utm||{};
-    const {data,error}=await sb.from("participants").upsert({email,name,country,points:currentPoints(),level:(currentLevel(currentPoints())||{}).name||null,registered_at:new Date().toISOString(),
-      reto_utm_source:u.utm_source||null,reto_utm_medium:u.utm_medium||null,reto_utm_campaign:u.utm_campaign||null,reto_utm_content:u.utm_content||null},{onConflict:"email"}).select().single();
+    // Ver si ya existe
+    const {data:existing}=await sb.from("participants").select("id,name,missions_done,points,choices").eq("email",email).maybeSingle();
+    const isReturning=!!existing;
+    const {data,error}=await sb.from("participants").upsert({email,name:isReturning?(existing.name||name):name,country,
+      registered_at:new Date().toISOString(),
+      reto_utm_source:u.utm_source||null,reto_utm_medium:u.utm_medium||null,
+      reto_utm_campaign:u.utm_campaign||null,reto_utm_content:u.utm_content||null
+    },{onConflict:"email"}).select().single();
     if(error) throw error;
-    state.registered=true;state.email=email;state.participantId=data.id||email; saveState();
-    const elReg=document.getElementById("regStatus");
+    // Restaurar progreso si regresa
+    if(isReturning && existing.missions_done){
+      const done={};(existing.missions_done||[]).forEach(id=>done[id]=true);state.done=done;
+    }
+    if(isReturning && existing.choices && existing.choices.avatar){
+      state.avatar={...AVATAR_DEFAULTS,...existing.choices.avatar};
+    }
+    state.registered=true;state.email=email;state.participantId=data.id||email;
     if(!state.avatar) state.avatar={...AVATAR_DEFAULTS};
     saveState();
+    const elReg=document.getElementById("regStatus");
     elReg.style.display="block";
-    elReg.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-      <div style="position:relative;cursor:pointer" onclick="openAvatarEditor()">${pixelChar(getAvatar(),64)}<span style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px">✏️</span></div>
-      <div>
-        <div style="font-weight:700;color:var(--success)">✅ ¡Bienvenido al reto!</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ya puedes empezar las misiones.</div>
-        <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
-      </div>
-    </div>`;
+    const doneCnt=Object.keys(state.done||{}).length;
+    if(isReturning){
+      elReg.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <div style="position:relative;cursor:pointer" onclick="openAvatarEditor()">${pixelChar(getAvatar(),64)}<span style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px">✏️</span></div>
+        <div>
+          <div style="font-weight:700;color:var(--accent-strong);font-size:14px">👋 ¡Bienvenido de nuevo!</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Llevas ${doneCnt} misión${doneCnt!==1?"es":""} completada${doneCnt!==1?"s":""}. ¡Continúa donde quedaste!</div>
+          <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Editar mi avatar</button>
+        </div>
+      </div>`;
+    } else {
+      elReg.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <div style="position:relative;cursor:pointer" onclick="openAvatarEditor()">${pixelChar(getAvatar(),64)}<span style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px">✏️</span></div>
+        <div>
+          <div style="font-weight:700;color:var(--success);font-size:14px">✅ ¡Bienvenido al reto!</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ya puedes empezar las misiones.</div>
+          <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
+        </div>
+      </div>`;
+    }
     renderAll(); loadLeaderboard();
   }catch(e){ showRegStatus("Error al registrarte: "+e.message); }
 }
@@ -963,7 +988,9 @@ renderAll();
 renderHeroPrizes();
 initPrizeTicker();
 if(sb) loadLeaderboard();
-if(state.registered){document.getElementById("regEmail").value=state.email||"";document.getElementById("registerForm").style.display="none";showRegStatus("✅ Ya estás registrado.",true)}
+// Siempre mostrar el formulario — no ocultar aunque esté registrado
+// Solo prellenar el correo si ya lo tenemos en memoria
+if(state.email) document.getElementById("regEmail").value=state.email;
 checkAdminRoute();
 
 
