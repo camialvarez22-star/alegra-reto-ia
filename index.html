@@ -683,7 +683,7 @@ const TOTAL_POSSIBLE = Object.values(MISSIONS).reduce((s,d)=>s+d.items.reduce((a
 ============================================================ */
 const STORAGE_KEY = "aleRetoV2_contadores";
 let state = loadState();
-function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null}; }
+function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; if(!s.avatar) s.avatar={...AVATAR_DEFAULTS}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null,avatar:{...AVATAR_DEFAULTS}}; }
 function saveState(){ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){} }
 function resetProgress(){ if(!confirm("¿Reiniciar tu progreso?")) return; const e=state.email,p=state.participantId,r=state.registered; state={done:{},choices:{},pending:{},activeDay:1,registered:r,participantId:p,email:e}; saveState(); if(sb&&p) syncToSupabase(); renderAll(); }
 function currentPoints(){ let t=0; for(const d of Object.values(MISSIONS)) for(const m of d.items) if(state.done[m.id]) t+=m.pts; return t; }
@@ -707,7 +707,16 @@ async function register(){
       reto_utm_source:u.utm_source||null,reto_utm_medium:u.utm_medium||null,reto_utm_campaign:u.utm_campaign||null,reto_utm_content:u.utm_content||null},{onConflict:"email"}).select().single();
     if(error) throw error;
     state.registered=true;state.email=email;state.participantId=data.id||email; saveState();
-    showRegStatus("✅ ¡Bienvenido al reto! Ya puedes empezar las misiones.",true);
+    const el=document.getElementById("regStatus");
+    el.style.display="block";
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+      ${avatarBadge(getAvatar(),64,true)}
+      <div>
+        <div style="font-weight:700;color:var(--success);font-size:14px">✅ ¡Bienvenido al reto!</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ya puedes empezar las misiones.</div>
+        <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
+      </div>
+    </div>`;
     renderAll(); loadLeaderboard();
   }catch(e){ showRegStatus("Error al registrarte: "+e.message); }
 }
@@ -750,7 +759,11 @@ function syncMyRowFromServer(row){
 function renderLeaderboardRows(rows){
   const el=document.getElementById("lbRows");
   if(!rows.length){el.innerHTML='<div class="lb-empty">Aún no hay participantes registrados.</div>';return;}
-  el.innerHTML=rows.map((r,i)=>`<div class="lb-row"><span class="lb-rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</span><span style="display:flex;align-items:center;gap:10px">${avatarSvg(r.name)} ${esc(r.name)}</span><span class="lb-pts">${r.points||0}</span></div>`).join("");
+  el.innerHTML=rows.map((r,i)=>{
+    const av = (r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:(r.email===state.email?getAvatar():AVATAR_DEFAULTS);
+    const isMe = r.email===state.email;
+    return `<div class="lb-row" style="${isMe?"background:var(--accent-soft);border-radius:10px;":""}"><span class="lb-rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} <span>${esc(r.name)}${isMe?' <span style="font-size:10px;color:var(--accent-strong);font-weight:700">TÚ</span>':""}</span></span><span class="lb-pts">${r.points||0}</span></div>`;
+  }).join("");
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
@@ -945,24 +958,141 @@ function renderLevels(){
 }
 
 /* ============================================================
-   AVATARES — generados automáticamente con iniciales + color único
+   AVATAR PIXEL ART — personalizable por el usuario
 ============================================================ */
-function stringToColor(str) {
-  const colors = ["#00535E","#00897B","#00695C","#2E7D32","#1565C0","#6A1B9A","#AD1457","#C62828","#E65100","#4527A0"];
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return colors[Math.abs(hash) % colors.length];
+const AVATAR_OPTIONS = {
+  skin:    { label:"Tono de piel", values:["#FDDBB4","#F5C397","#E8A87C","#C68642","#8D5524","#4A2912"], emoji:["👱","🧑","👩","🧔","👨‍🦱","👴"] },
+  hair:    { label:"Cabello", values:["bald","short_black","short_brown","short_blonde","long_black","long_brown","long_blonde","curly_black","curly_brown","afro"], labels:["Sin cabello","Corto negro","Corto marrón","Corto rubio","Largo negro","Largo marrón","Largo rubio","Rizado negro","Rizado marrón","Afro"] },
+  hairColor:{ label:"Color cabello", values:["#1a1a1a","#4a2800","#8B4513","#C4A35A","#E8D5A3","#FF6B6B","#6B6BFF","#A0A0A0"], emoji:["⚫","🟤","🟫","🟡","🌾","🔴","🔵","🩶"] },
+  outfit:  { label:"Outfit", values:["shirt_teal","shirt_blue","shirt_red","shirt_purple","blazer_black","blazer_green","hoodie_gray","hoodie_orange"], labels:["Camisa teal","Camisa azul","Camisa roja","Camisa morada","Blazer negro","Blazer verde","Hoodie gris","Hoodie naranja"] },
+  acc:     { label:"Accesorio", values:["none","glasses_round","glasses_rect","earring_l","earring_both","headband","cap","headphones"], labels:["Ninguno","Gafas redondas","Gafas cuadradas","Arete izq.","Aretes","Diadema","Gorra","Audífonos"] },
+  bg:      { label:"Fondo", values:["#001E3B","#00535E","#4A1580","#C62828","#1565C0","#2E7D32","#E65100","#37474F"], emoji:["🌑","🌊","💜","❤️","💙","💚","🟠","🩶"] }
+};
+const AVATAR_DEFAULTS = { skin:"#E8A87C", hair:"short_brown", hairColor:"#4a2800", outfit:"shirt_teal", acc:"none", bg:"#001E3B" };
+
+function getAvatar(){ return (state&&state.avatar) ? {...AVATAR_DEFAULTS,...state.avatar} : {...AVATAR_DEFAULTS}; }
+function saveAvatar(av){ state.avatar=av; saveState(); if(sb&&state.participantId){ try{ sb.from("participants").update({choices:{...state.choices,avatar:av}}).eq("email",state.email); }catch(e){} } }
+
+function pixelChar(av, size=48){
+  const a = {...AVATAR_DEFAULTS,...av};
+  const s = size, u = s/16; // unit = 1 pixel block
+  const r = (x,y,w,h,c) => `<rect x="${x*u}" y="${y*u}" width="${w*u}" height="${h*u}" fill="${c}"/>`;
+  const skin = a.skin, bg = a.bg;
+
+  // Hair color
+  const hc = a.hairColor||"#1a1a1a";
+
+  // Outfit colors
+  const outfitColors = {
+    shirt_teal:"#00897B", shirt_blue:"#1565C0", shirt_red:"#C62828", shirt_purple:"#6A1B9A",
+    blazer_black:"#212121", blazer_green:"#2E7D32", hoodie_gray:"#546E7A", hoodie_orange:"#E65100"
+  };
+  const oc = outfitColors[a.outfit]||"#00897B";
+  const isHoodie = a.outfit.startsWith("hoodie");
+  const isBlazer = a.outfit.startsWith("blazer");
+
+  // Hair shapes
+  const hairMap = {
+    bald: "",
+    short_black: r(5,3,6,2,hc)+r(4,4,8,1,hc),
+    short_brown: r(5,3,6,2,hc)+r(4,4,8,1,hc),
+    short_blonde: r(5,3,6,2,hc)+r(4,4,8,1,hc),
+    long_black: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
+    long_brown: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
+    long_blonde: r(5,2,6,2,hc)+r(4,3,1,5,hc)+r(11,3,1,5,hc)+r(5,3,6,1,hc),
+    curly_black: r(4,2,8,2,hc)+r(3,3,2,2,hc)+r(11,3,2,2,hc)+r(5,3,6,1,hc),
+    curly_brown: r(4,2,8,2,hc)+r(3,3,2,2,hc)+r(11,3,2,2,hc)+r(5,3,6,1,hc),
+    afro: r(3,1,10,4,hc)+r(2,3,2,3,hc)+r(12,3,2,3,hc)
+  };
+  const hairSvg = hairMap[a.hair]||hairMap.short_brown;
+
+  // Accessories
+  const accMap = {
+    none: "",
+    glasses_round: `<circle cx="${6.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/><circle cx="${9.5*u}" cy="${7*u}" r="${1.2*u}" fill="none" stroke="#333" stroke-width="${0.5*u}"/>${r(7.5,6.8,0.5,0.4,"#333")}`,
+    glasses_rect: r(5,6.5,3,1.5,"none")+`<rect x="${5*u}" y="${6.5*u}" width="${3*u}" height="${1.5*u}" fill="none" stroke="#333" stroke-width="${0.4*u}"/><rect x="${8.5*u}" y="${6.5*u}" width="${3*u}" height="${1.5*u}" fill="none" stroke="#333" stroke-width="${0.4*u}"/>`,
+    earring_l: r(4,8,0.8,1.2,"#FFD700"),
+    earring_both: r(4,8,0.8,1.2,"#FFD700")+r(11.2,8,0.8,1.2,"#FFD700"),
+    headband: r(4,4,8,1,"#FF6B6B"),
+    cap: r(4,2,8,2,hc)+r(3,3,10,1,hc)+r(3,3,2,1,"#555"),
+    headphones: r(3,4,1,3,"#333")+r(12,4,1,3,"#333")+r(3,4,1.5,1.5,"#555")+r(11.5,4,1.5,1.5,"#555")
+  };
+  const accSvg = accMap[a.acc]||"";
+
+  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;border-radius:${u*2}px;flex-shrink:0">
+    ${r(0,0,16,16,bg)}
+    ${r(5,4,6,7,skin)}
+    ${r(4,5,1,5,skin)}${r(11,5,1,5,skin)}
+    ${r(6,6,1,1,"#333")}${r(9,6,1,1,"#333")}
+    ${r(6,8,4,1,"#c0796a")}
+    ${hairSvg}
+    ${accSvg}
+    ${r(4,11,8,2,oc)}
+    ${r(3,13,3,3,oc)}${r(10,13,3,3,oc)}
+    ${isHoodie?r(7,11,2,1,"#fff"):""}
+    ${isBlazer?r(7,11,1,3,"#fff")+r(8,11,1,3,"#fff"):""}
+  </svg>`;
 }
-function getInitials(name) {
-  const parts = (name||"?").trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+
+function avatarSvg(nameOrAv, size=36){
+  if(typeof nameOrAv === "object") return pixelChar(nameOrAv, size);
+  return pixelChar({...AVATAR_DEFAULTS}, size);
 }
-function avatarSvg(name, size=36) {
-  const color = stringToColor(name||"?");
-  const initials = getInitials(name||"?");
-  const fontSize = Math.round(size * 0.38);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;flex-shrink:0"><circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="${color}"/><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Lexend,Inter,Arial,sans-serif" font-size="${fontSize}" font-weight="700" fill="#ffffff">${initials}</text></svg>`;
+
+// Modal de personalización de avatar
+function openAvatarEditor(){
+  const av = getAvatar();
+  const modal = document.createElement("div");
+  modal.id = "avatarModal";
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";
+  
+  function buildModal(){
+    const cur = getAvatar();
+    modal.innerHTML = `
+      <div style="background:var(--surface);border-radius:20px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h3 style="margin:0;font-size:18px;font-weight:700">🎮 Crea tu avatar pixel art</h3>
+          <button onclick="document.getElementById('avatarModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
+        </div>
+        <div style="display:flex;justify-content:center;margin-bottom:20px">
+          <div id="avPreview">${pixelChar(cur,96)}</div>
+        </div>
+        ${Object.entries(AVATAR_OPTIONS).map(([key,opt])=>`
+          <div style="margin-bottom:14px">
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">${opt.label}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${opt.values.map((v,i)=>{
+                const isSelected = (key==="hair"?cur.hair:key==="outfit"?cur.outfit:key==="acc"?cur.acc:key==="skin"?cur.skin:key==="hairColor"?cur.hairColor:cur.bg)===v;
+                const label = opt.emoji?opt.emoji[i]:(opt.labels?opt.labels[i]:v);
+                return `<button onclick="updateAv('${key}','${v}')" style="border:2px solid ${isSelected?"var(--accent-strong)":"var(--border)"};border-radius:8px;padding:4px 8px;font-size:${opt.emoji?"18px":"11px"};cursor:pointer;background:${isSelected?"var(--accent-soft)":"var(--surface-2)"};color:var(--text);min-width:36px;transition:all .15s" title="${opt.labels?opt.labels[i]:v}">${key==="skin"?`<span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${v}"></span>`:(key==="bg"?`<span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:${v}"></span>`:label)}</button>`;
+              }).join("")}
+            </div>
+          </div>
+        `).join("")}
+        <button onclick="confirmAvatar()" style="width:100%;background:var(--accent-strong);color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px">✅ Guardar mi avatar</button>
+      </div>`;
+  }
+  
+  window.updateAv = function(key, val){
+    const cur = getAvatar();
+    cur[key]=val;
+    state.avatar=cur;
+    buildModal();
+  };
+  
+  window.confirmAvatar = function(){
+    saveAvatar(getAvatar());
+    modal.remove();
+    renderAll();
+  };
+  
+  buildModal();
+  document.body.appendChild(modal);
+}
+
+function avatarBadge(av, size=36, editable=false){
+  const editBtn = editable ? `<button onclick="openAvatarEditor()" style="position:absolute;bottom:-4px;right:-4px;background:var(--accent-strong);border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Editar avatar">✏️</button>` : "";
+  return `<div style="position:relative;display:inline-block">${pixelChar(av||AVATAR_DEFAULTS,size)}${editBtn}</div>`;
 }
 
 /* ============================================================
@@ -999,7 +1129,8 @@ function renderAdminRows(rows){
   if(!rows.length){ el.innerHTML=`<div class="lb-empty">Sin participantes de ${PRIZE_COUNTRY_RESTRICTION} esta semana todavía.</div>`; return; }
   el.innerHTML=rows.map((r,i)=>{
     const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1);
-    return `<div class="lb-row admin-row"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${avatarSvg(r.name)} ${esc(r.name)}</span><span class="lb-country">${esc(r.email)}</span><span class="lb-pts">${r.points||0}</span></div>`;
+    const av=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:AVATAR_DEFAULTS;
+    return `<div class="lb-row admin-row"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} ${esc(r.name)}</span><span class="lb-country">${esc(r.email)}</span><span class="lb-pts">${r.points||0}</span></div>`;
   }).join("");
 }
 async function refreshWeeklyResults(){
@@ -1026,7 +1157,20 @@ renderAll();
 renderHeroPrizes();
 initPrizeTicker();
 if(sb) loadLeaderboard();
-if(state.registered){document.getElementById("regEmail").value=state.email||"";document.getElementById("registerForm").style.display="none";showRegStatus("✅ Ya estás registrado.",true)}
+if(state.registered){
+  document.getElementById("regEmail").value=state.email||"";
+  document.getElementById("registerForm").style.display="none";
+  const el=document.getElementById("regStatus");
+  el.style.display="block";
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    ${avatarBadge(getAvatar(),56,true)}
+    <div>
+      <div style="font-weight:700;color:var(--success)">✅ Ya estás registrado</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${esc(state.email||"")}</div>
+      <button onclick="openAvatarEditor()" style="margin-top:6px;background:var(--accent-strong);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">🎮 Personalizar mi avatar</button>
+    </div>
+  </div>`;
+}
 checkAdminRoute();
 
 
