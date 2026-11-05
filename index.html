@@ -500,8 +500,14 @@
     <p class="note" style="margin-top:16px">💰 El bono Amazon es aparte y es competitivo: solo los 3 mejores puntajes de la semana en Colombia lo ganan. Ver el detalle de los premios en la <a href="#" style="color:var(--accent-strong);font-weight:600">página de inicio del reto</a>.</p>
   </section>
 
+  <!-- Gráfica de progreso personal -->
+  <section class="block" id="progressChart">
+    <div class="block-head"><div><h2>📊 Tu progreso</h2><p>Misiones completadas por día.</p></div></div>
+    <div id="progressBars" style="padding:16px 0"></div>
+  </section>
+
   <section class="block" id="leaderboard">
-    <div class="block-head"><div><h2>Resultados en vivo</h2><p>Tu puntaje se actualiza solo, apenas uses la funcionalidad correspondiente en Alegra.</p></div></div>
+    <div class="block-head"><div><h2>🏆 Tabla de líderes</h2><p>Los mejores puntajes del reto — solo los 3 primeros ganan premio semanal.</p></div></div>
     <div class="leaderboard">
       <div class="lb-row head"><span></span><span>Participante</span><span>Puntos</span></div>
       <div id="lbRows"><div class="lb-empty">Aún no hay participantes registrados.</div></div>
@@ -715,41 +721,16 @@ async function register(){
     elReg.innerHTML="";
     const doneCnt=Object.keys(state.done||{}).length;
 
-    // Contenedor principal
-    const regWrap=document.createElement("div");
-    regWrap.style.cssText="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px";
-
-    // Avatar clickeable
-    const avWrap=document.createElement("div");
-    avWrap.style.cssText="position:relative;cursor:pointer;flex-shrink:0";
-    avWrap.innerHTML=buildAvatarSVG(getAvatar(), 64);
-    const avEdit=document.createElement("span");
-    avEdit.style.cssText="position:absolute;bottom:-2px;right:-2px;background:#00897B;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px";
-    avEdit.textContent="✏️";
-    avWrap.appendChild(avEdit);
-    avWrap.onclick=()=>openAvatarEditor();
-
-    // Texto
-    const textDiv=document.createElement("div");
-    const title=document.createElement("div");
-    title.style.cssText=`font-weight:700;font-size:14px;color:${isReturning?"var(--accent-strong)":"var(--success)"}`;
-    title.textContent=isReturning?"👋 ¡Bienvenido de nuevo!":"✅ ¡Bienvenido al reto!";
-    const sub=document.createElement("div");
-    sub.style.cssText="font-size:12px;color:var(--text-muted);margin-top:2px";
-    sub.textContent=isReturning
-      ?`Llevas ${doneCnt} misión${doneCnt!==1?"es":""} completada${doneCnt!==1?"s":""}. ¡Continúa donde quedaste!`
-      :"Ya puedes empezar las misiones.";
-    const avBtn=document.createElement("button");
-    avBtn.style.cssText="margin-top:6px;background:#00897B;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit";
-    avBtn.textContent=isReturning?"🎮 Editar mi avatar":"🎮 Personalizar mi avatar";
-    avBtn.onclick=()=>openAvatarEditor();
-    textDiv.appendChild(title);
-    textDiv.appendChild(sub);
-    textDiv.appendChild(avBtn);
-
-    regWrap.appendChild(avWrap);
-    regWrap.appendChild(textDiv);
-    elReg.appendChild(regWrap);
+    // Mensaje de bienvenida limpio
+    elReg.innerHTML=isReturning
+      ?`<div style="margin-top:8px;padding:10px 14px;background:var(--accent-soft);border-radius:10px;border-left:3px solid var(--accent-strong)">
+          <div style="font-weight:700;color:var(--accent-strong);font-size:14px">👋 ¡Bienvenido de nuevo!</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Llevas ${doneCnt} misión${doneCnt!==1?"es":""} completada${doneCnt!==1?"s":""}. ¡Continúa donde quedaste!</div>
+        </div>`
+      :`<div style="margin-top:8px;padding:10px 14px;background:#E8F5E9;border-radius:10px;border-left:3px solid var(--success)">
+          <div style="font-weight:700;color:var(--success);font-size:14px">✅ ¡Bienvenido al reto!</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ya puedes empezar las misiones del Día 1.</div>
+        </div>`;
     renderAll(); loadLeaderboard();
   }catch(e){ showRegStatus("Error al registrarte: "+e.message); }
 }
@@ -771,7 +752,7 @@ async function syncToSupabase(){
 async function loadLeaderboard(){
   if(!sb) return;
   try{
-    const {data}=await sb.from("participants").select("name,country,points").order("points",{ascending:false}).limit(20);
+    const {data}=await sb.from("participants").select("name,points").order("points",{ascending:false}).limit(20);
     renderLeaderboardRows(data||[]);
   }catch(e){}
   sb.channel("leaderboard").on("postgres_changes",{event:"*",schema:"public",table:"participants"},(payload)=>{
@@ -793,10 +774,13 @@ function renderLeaderboardRows(rows){
   const el=document.getElementById("lbRows");
   if(!rows.length){el.innerHTML='<div class="lb-empty">Aún no hay participantes registrados.</div>';return;}
   el.innerHTML=rows.map((r,i)=>{
-    const av=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:(r.email===state.email?getAvatar():AVATAR_DEFAULTS);
-    const isMe=r.email===state.email;
+    const isMe=r.name===state.name||(state.email&&r.email===state.email);
     const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1;
-    return `<div class="lb-row" style="${isMe?"background:var(--accent-soft);border-radius:10px;":""}"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(av,36)} ${esc(r.name)}${isMe?' <span style="font-size:10px;color:var(--accent-strong);font-weight:700"> TÚ</span>':""}</span><span class="lb-pts">${r.points||0}</span></div>`;
+    return `<div class="lb-row" style="${isMe?"background:var(--accent-soft);border-radius:10px;":""}">
+      <span class="lb-rank">${medal}</span>
+      <span>${esc(r.name)}${isMe?' <span style="font-size:10px;color:var(--accent-strong);font-weight:700;margin-left:6px">TÚ</span>':""}</span>
+      <span class="lb-pts">${r.points||0} pts</span>
+    </div>`;
   }).join("");
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -806,7 +790,36 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 ============================================================ */
 function hexToRgba(h,a){h=h.replace("#","");return`rgba(${parseInt(h.substring(0,2),16)},${parseInt(h.substring(2,4),16)},${parseInt(h.substring(4,6),16)},${a})`}
 
-function renderAll(){renderProgress();renderTabs();renderMissions();renderLevels()}
+
+function renderProgressChart(){
+  const el=document.getElementById("progressBars");
+  if(!el||!state.registered) return;
+  const days=Object.keys(MISSIONS).map(Number).sort();
+  el.innerHTML=days.map(d=>{
+    const day=MISSIONS[d];
+    if(!day) return "";
+    const items=day.items||[];
+    const total=items.length;
+    const done=items.filter(i=>state.done[i.id]).length;
+    const pts=items.reduce((s,i)=>s+(state.done[i.id]?i.pts:0),0);
+    const totalPts=items.reduce((s,i)=>s+i.pts,0);
+    const pct=total>0?Math.round(done/total*100):0;
+    const color=d===1?"#00897B":d===2?"#1565C0":"#4A1580";
+    const unlocked=isDayUnlocked(d);
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-weight:600;font-size:13px;color:var(--text)">${day.label||"Día "+d}</span>
+        <span style="font-size:12px;color:var(--text-muted)">${done}/${total} misiones · ${pts}/${totalPts} pts</span>
+      </div>
+      <div style="background:var(--border);border-radius:99px;height:12px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;transition:width .4s ease;min-width:${pct>0?'4px':'0'}"></div>
+      </div>
+      ${done===total&&total>0?`<div style="font-size:11px;color:${color};font-weight:600;margin-top:4px">✅ ¡Día completado!</div>`:""}
+    </div>`;
+  }).join("");
+}
+
+function renderAll(){renderProgress();renderTabs();renderMissions();renderLevels();renderProgressChart();}
 
 function renderHeroPrizes(){
   const el=document.getElementById("heroPrizes");if(!el)return;
@@ -1021,329 +1034,16 @@ function showView(){
   retoEl.style.display = showReto ? "" : "none";
 }
 
-/* ============================================================
-   AVATAR SVG — generado localmente, sin dependencias externas
-============================================================ */
-const AVATAR_DEFAULTS = {
-  gender:"woman", skin:"f8d25c", hair:"longstraight", hairColor:"4a312c",
-  outfit:"blazer", outfitColor:"00897B", acc:"none", bg:"b6e3f4", facialHair:"none"
-};
+/* Avatar eliminado — funciones de compatibilidad */
+const AVATAR_DEFAULTS = {};
+function getAvatar(){ return {}; }
+function saveAvatar(av){ state.avatar=av; saveState(); }
+function pixelChar(av,size){ return ""; }
+function avatarImg(av,size){ return ""; }
+function avatarBadge(av,size,editable){ return ""; }
+function buildAvatarSVG(av,size){ return ""; }
+function openAvatarEditor(){ return; }
 
-function getAvatar(){ return (state&&state.avatar)?{...AVATAR_DEFAULTS,...state.avatar}:{...AVATAR_DEFAULTS}; }
-
-function saveAvatar(av){
-  state.avatar=av; saveState();
-  if(sb&&state.participantId){ try{sb.from("participants").update({choices:{...state.choices,avatar:av}}).eq("email",state.email);}catch(e){} }
-}
-
-function buildAvatarSVG(av, size){
-  const a={...AVATAR_DEFAULTS,...(av||{})};
-  const s=size||80;
-  const u=s/80; // scale unit
-
-  // Colors
-  const skinColors={"ffdbb4":"#FDDBB4","f8d25c":"#F8D25C","edb98a":"#EDB98A","d08b5b":"#D08B5B","ae5d29":"#AE5D29","614335":"#614335"};
-  const skin=skinColors[a.skin]||"#F8D25C";
-  const bg="#"+a.bg;
-  const hc="#"+a.hairColor;
-  const oc="#"+a.outfitColor;
-
-  // Outfit colors - darker version for collar
-  const ocDark=a.outfitColor;
-
-  // SVG parts
-  const W=80, H=80;
-
-  // Background shape
-  let bgShape=`<circle cx="40" cy="40" r="40" fill="${bg}"/>`;
-
-  // Body/outfit
-  let body="";
-  if(a.outfit==="blazer"){
-    body=`<path d="M18 72 Q20 55 40 52 Q60 55 62 72 Q51 68 40 68 Q29 68 18 72Z" fill="${oc}"/>
-    <path d="M36 52 L40 60 L44 52" fill="white" opacity="0.9"/>
-    <path d="M18 72 Q22 58 32 54 L36 70Z" fill="${oc}" opacity="0.8"/>
-    <path d="M62 72 Q58 58 48 54 L44 70Z" fill="${oc}" opacity="0.8"/>`;
-  } else if(a.outfit==="hoodie"){
-    body=`<path d="M16 72 Q18 54 40 51 Q62 54 64 72Z" fill="${oc}"/>
-    <path d="M32 51 Q40 58 48 51 Q44 65 40 65 Q36 65 32 51Z" fill="${oc}" opacity="0.7"/>`;
-  } else if(a.outfit==="shirt"){
-    body=`<path d="M18 72 Q20 55 40 52 Q60 55 62 72Z" fill="${oc}"/>
-    <path d="M36 52 L38 56 L40 52 L42 56 L44 52" fill="none" stroke="white" stroke-width="1" opacity="0.6"/>`;
-  } else if(a.outfit==="tshirt"){
-    body=`<path d="M20 72 Q21 56 40 53 Q59 56 60 72Z" fill="${oc}"/>`;
-  } else {
-    body=`<path d="M18 72 Q20 55 40 52 Q60 55 62 72Z" fill="${oc}"/>`;
-  }
-
-  // Neck
-  const neck=`<rect x="35" y="47" width="10" height="10" rx="3" fill="${skin}"/>`;
-
-  // Head
-  const head=`<ellipse cx="40" cy="36" rx="18" ry="20" fill="${skin}"/>`;
-
-  // Ears
-  const ears=`<ellipse cx="22" cy="36" rx="4" ry="5" fill="${skin}"/>
-  <ellipse cx="58" cy="36" rx="4" ry="5" fill="${skin}"/>`;
-
-  // Eyes
-  const eyes=`<ellipse cx="33" cy="33" rx="3.5" ry="4" fill="white"/>
-  <ellipse cx="47" cy="33" rx="3.5" ry="4" fill="white"/>
-  <circle cx="34" cy="34" r="2.5" fill="#2c1b18"/>
-  <circle cx="48" cy="34" r="2.5" fill="#2c1b18"/>
-  <circle cx="35" cy="32.5" r="1" fill="white"/>
-  <circle cx="49" cy="32.5" r="1" fill="white"/>`;
-
-  // Eyebrows
-  const brows=`<path d="M29 28 Q33 26 37 28" stroke="${hc}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M43 28 Q47 26 51 28" stroke="${hc}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
-
-  // Nose
-  const nose=`<path d="M38 38 Q40 41 42 38" stroke="${skin==="#FDDBB4"||skin==="#F8D25C"?"#dba87a":"#8B4513"}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
-
-  // Mouth - always smiling
-  const mouth=`<path d="M34 44 Q40 49 46 44" stroke="#c0796a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-
-  // Cheeks
-  const cheeks=`<ellipse cx="25" cy="40" rx="5" ry="3.5" fill="#f9a8a8" opacity="0.35"/>
-  <ellipse cx="55" cy="40" rx="5" ry="3.5" fill="#f9a8a8" opacity="0.35"/>`;
-
-  // Hair styles
-  let hair="";
-  if(a.gender==="woman"||a.gender==="nb"){
-    if(a.hair==="longstraight"){
-      hair=`<path d="M22 36 Q20 20 40 16 Q60 20 58 36 Q58 20 40 15 Q22 20 22 36Z" fill="${hc}"/>
-      <rect x="20" y="30" width="6" height="22" rx="3" fill="${hc}"/>
-      <rect x="54" y="30" width="6" height="22" rx="3" fill="${hc}"/>
-      <ellipse cx="40" cy="17" rx="18" ry="6" fill="${hc}"/>`;
-    } else if(a.hair==="longcurly"){
-      hair=`<ellipse cx="40" cy="18" rx="19" ry="8" fill="${hc}"/>
-      <path d="M21 30 Q17 42 20 54 Q23 46 22 36Z" fill="${hc}"/>
-      <path d="M59 30 Q63 42 60 54 Q57 46 58 36Z" fill="${hc}"/>
-      <path d="M20 50 Q18 58 22 62" stroke="${hc}" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 50 Q62 58 58 62" stroke="${hc}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
-    } else if(a.hair==="bob"){
-      hair=`<ellipse cx="40" cy="20" rx="18" ry="8" fill="${hc}"/>
-      <rect x="21" y="22" width="5" height="18" rx="2.5" fill="${hc}"/>
-      <rect x="54" y="22" width="5" height="18" rx="2.5" fill="${hc}"/>
-      <path d="M21 38 Q40 46 59 38" fill="${hc}"/>`;
-    } else if(a.hair==="bun"){
-      hair=`<ellipse cx="40" cy="20" rx="17" ry="7" fill="${hc}"/>
-      <circle cx="40" cy="13" r="8" fill="${hc}"/>
-      <circle cx="40" cy="13" r="5" fill="${hc}" opacity="0.7"/>`;
-    } else if(a.hair==="afro"){
-      hair=`<ellipse cx="40" cy="22" rx="22" ry="18" fill="${hc}"/>
-      <ellipse cx="40" cy="30" rx="20" ry="10" fill="${hc}"/>`;
-    } else if(a.hair==="braids"){
-      hair=`<ellipse cx="40" cy="20" rx="18" ry="7" fill="${hc}"/>
-      <rect x="21" y="22" width="4" height="28" rx="2" fill="${hc}"/>
-      <rect x="55" y="22" width="4" height="28" rx="2" fill="${hc}"/>
-      <circle cx="23" cy="51" r="3" fill="${hc}"/>
-      <circle cx="57" cy="51" r="3" fill="${hc}"/>`;
-    } else if(a.hair==="shaved"){
-      hair=`<ellipse cx="40" cy="22" rx="18" ry="8" fill="${hc}" opacity="0.6"/>`;
-    } else {
-      hair=`<ellipse cx="40" cy="20" rx="18" ry="7" fill="${hc}"/>
-      <rect x="21" y="20" width="5" height="20" rx="2.5" fill="${hc}"/>
-      <rect x="54" y="20" width="5" height="20" rx="2.5" fill="${hc}"/>`;
-    }
-  } else { // man
-    if(a.hair==="shortflat"){
-      hair=`<ellipse cx="40" cy="20" rx="18" ry="7" fill="${hc}"/>
-      <rect x="22" y="20" width="36" height="5" rx="0" fill="${hc}"/>`;
-    } else if(a.hair==="shortcurly"){
-      hair=`<ellipse cx="40" cy="21" rx="18" ry="8" fill="${hc}"/>
-      <circle cx="30" cy="19" r="4" fill="${hc}"/>
-      <circle cx="40" cy="17" r="4" fill="${hc}"/>
-      <circle cx="50" cy="19" r="4" fill="${hc}"/>`;
-    } else if(a.hair==="afro"){
-      hair=`<ellipse cx="40" cy="22" rx="22" ry="18" fill="${hc}"/>`;
-    } else if(a.hair==="caesar"){
-      hair=`<ellipse cx="40" cy="20" rx="17" ry="6" fill="${hc}"/>
-      <rect x="23" y="20" width="34" height="4" fill="${hc}"/>`;
-    } else if(a.hair==="pompadour"){
-      hair=`<ellipse cx="40" cy="22" rx="17" ry="7" fill="${hc}"/>
-      <path d="M28 20 Q40 10 52 20" fill="${hc}"/>`;
-    } else if(a.hair==="dreads"){
-      hair=`<ellipse cx="40" cy="21" rx="18" ry="8" fill="${hc}"/>
-      <rect x="25" y="22" width="4" height="20" rx="2" fill="${hc}"/>
-      <rect x="33" y="22" width="4" height="24" rx="2" fill="${hc}"/>
-      <rect x="43" y="22" width="4" height="24" rx="2" fill="${hc}"/>
-      <rect x="51" y="22" width="4" height="20" rx="2" fill="${hc}"/>`;
-    } else if(a.hair==="shaved"){
-      hair=`<ellipse cx="40" cy="22" rx="18" ry="7" fill="${hc}" opacity="0.5"/>`;
-    } else {
-      hair=`<ellipse cx="40" cy="20" rx="18" ry="7" fill="${hc}"/>`;
-    }
-  }
-
-  // Accessories
-  let acc="";
-  if(a.acc==="glasses"){
-    acc=`<circle cx="33" cy="33" r="6" fill="none" stroke="#555" stroke-width="1.5"/>
-    <circle cx="47" cy="33" r="6" fill="none" stroke="#555" stroke-width="1.5"/>
-    <line x1="39" y1="33" x2="41" y2="33" stroke="#555" stroke-width="1.5"/>
-    <line x1="27" y1="33" x2="22" y2="31" stroke="#555" stroke-width="1.5"/>
-    <line x1="53" y1="33" x2="58" y2="31" stroke="#555" stroke-width="1.5"/>`;
-  } else if(a.acc==="sunglasses"){
-    acc=`<rect x="27" y="29" width="12" height="8" rx="4" fill="#222" opacity="0.85"/>
-    <rect x="41" y="29" width="12" height="8" rx="4" fill="#222" opacity="0.85"/>
-    <line x1="39" y1="33" x2="41" y2="33" stroke="#222" stroke-width="1.5"/>
-    <line x1="27" y1="33" x2="22" y2="31" stroke="#555" stroke-width="1.5"/>
-    <line x1="53" y1="33" x2="58" y2="31" stroke="#555" stroke-width="1.5"/>`;
-  } else if(a.acc==="earrings"){
-    acc=`<circle cx="22" cy="38" r="2.5" fill="#FFD700"/>
-    <circle cx="58" cy="38" r="2.5" fill="#FFD700"/>`;
-  } else if(a.acc==="headband"){
-    acc=`<path d="M22 26 Q40 20 58 26" stroke="#E65100" stroke-width="4" fill="none" stroke-linecap="round"/>`;
-  } else if(a.acc==="cap"){
-    acc=`<ellipse cx="40" cy="22" rx="20" ry="7" fill="${hc}"/>
-    <path d="M20 22 Q40 15 60 22 L58 25 Q40 18 22 25Z" fill="${hc}" opacity="0.8"/>
-    <path d="M20 24 L14 26 L20 25Z" fill="${hc}"/>`;
-  }
-
-  // Facial hair (men/nb)
-  let facial="";
-  if(a.facialHair==="beard"){
-    facial=`<path d="M28 44 Q40 54 52 44 Q50 50 40 52 Q30 50 28 44Z" fill="${hc}" opacity="0.9"/>`;
-  } else if(a.facialHair==="mustache"){
-    facial=`<path d="M33 43 Q40 46 47 43 Q44 41 40 42 Q36 41 33 43Z" fill="${hc}" opacity="0.9"/>`;
-  } else if(a.facialHair==="goatee"){
-    facial=`<path d="M36 44 Q40 50 44 44 Q42 48 40 49 Q38 48 36 44Z" fill="${hc}" opacity="0.9"/>`;
-  }
-
-  const svgContent=`${bgShape}${body}${neck}${ears}${head}${brows}${eyes}${cheeks}${nose}${mouth}${hair}${acc}${facial}`;
-
-  if(size && size !== 80){
-    return `<svg width="${size}" height="${size}" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;flex-shrink:0">${svgContent}</svg>`;
-  }
-  return `<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;flex-shrink:0">${svgContent}</svg>`;
-}
-
-function avatarImg(av, size=36, seed){
-  return buildAvatarSVG(av, size);
-}
-function pixelChar(av,size=36){ return avatarImg(av,size); }
-function avatarSvg(av,size=36){ return avatarImg(av,size); }
-
-function avUpdatePreview(){
-  const el=document.getElementById("avModalPreview");
-  if(!el) return;
-  el.innerHTML=buildAvatarSVG(state.avTmp, 110);
-}
-
-function openAvatarEditor(){
-  state.avTmp={...getAvatar()};
-
-  const SKINS=[{v:"ffdbb4",l:"Muy claro"},{v:"f8d25c",l:"Claro"},{v:"edb98a",l:"Medio claro"},{v:"d08b5b",l:"Medio"},{v:"ae5d29",l:"Oscuro"},{v:"614335",l:"Muy oscuro"}];
-  const HAIRS={
-    woman:[{v:"longstraight",l:"Largo liso"},{v:"longcurly",l:"Largo rizado"},{v:"bob",l:"Bob"},{v:"bun",l:"Moño"},{v:"afro",l:"Afro"},{v:"braids",l:"Trenzas"},{v:"shaved",l:"Rapado"}],
-    man:[{v:"shortflat",l:"Corto liso"},{v:"shortcurly",l:"Corto rizado"},{v:"caesar",l:"César"},{v:"pompadour",l:"Pompadour"},{v:"dreads",l:"Rastas"},{v:"afro",l:"Afro"},{v:"shaved",l:"Rapado"}],
-    nb:[{v:"longstraight",l:"Largo liso"},{v:"bob",l:"Bob"},{v:"shortflat",l:"Corto"},{v:"afro",l:"Afro"},{v:"braids",l:"Trenzas"},{v:"bun",l:"Moño"},{v:"shaved",l:"Rapado"}]
-  };
-  const HAIR_COLORS=[{v:"1c1c1c",l:"Negro"},{v:"4a312c",l:"Castaño oscuro"},{v:"724133",l:"Castaño"},{v:"b58143",l:"Rubio oscuro"},{v:"e8e1ef",l:"Rubio claro"},{v:"a55728",l:"Cobrizo"},{v:"fc909f",l:"Rosa"},{v:"6c4b3a",l:"Chocolate"}];
-  const OUTFITS=[{v:"blazer",l:"Blazer"},{v:"hoodie",l:"Hoodie"},{v:"shirt",l:"Camisa"},{v:"tshirt",l:"Camiseta"}];
-  const OUTFIT_COLORS=[{v:"00897B",l:"Teal"},{v:"1565C0",l:"Azul"},{v:"C62828",l:"Rojo"},{v:"4A1580",l:"Morado"},{v:"2E7D32",l:"Verde"},{v:"E65100",l:"Naranja"},{v:"546E7A",l:"Gris"},{v:"212121",l:"Negro"},{v:"00535E",l:"Verde oscuro"},{v:"4a312c",l:"Café"}];
-  const ACCS=[{v:"none",l:"Ninguno"},{v:"glasses",l:"Gafas"},{v:"sunglasses",l:"Gafas sol"},{v:"earrings",l:"Aretes"},{v:"headband",l:"Diadema"},{v:"cap",l:"Gorra"}];
-  const FACIAL=[{v:"none",l:"Ninguna"},{v:"mustache",l:"Bigote"},{v:"beard",l:"Barba"},{v:"goatee",l:"Chiva"}];
-  const BGS=[{v:"b6e3f4",l:"Azul"},{v:"c0aede",l:"Lila"},{v:"d1d4f9",l:"Índigo"},{v:"ffd5dc",l:"Rosa"},{v:"ffdfbf",l:"Durazno"},{v:"e8f5e9",l:"Verde"},{v:"fff9c4",l:"Amarillo"},{v:"f3e5f5",l:"Violeta"},{v:"cff2f1",l:"Menta"},{v:"001E3B",l:"Noche"}];
-
-  const modal=document.createElement("div");
-  modal.id="avModal";
-  modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto";
-
-  function btnS(on){ return `border:2px solid ${on?"#00897B":"#eee"};border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;background:${on?"#E8F5E9":"transparent"};color:${on?"#00535E":"#555"};font-family:inherit;transition:all .15s`; }
-
-  function renderModal(){
-    const c=state.avTmp;
-    const hairs=HAIRS[c.gender]||HAIRS.woman;
-    const showFacial=(c.gender==="man"||c.gender==="nb");
-
-    modal.innerHTML=`<div style="background:var(--surface,#fff);border-radius:20px;padding:24px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto;color:var(--text,#111)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h3 style="margin:0;font-size:17px;font-weight:700">🎨 Crea tu avatar</h3>
-        <button id="avClose" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1">✕</button>
-      </div>
-      <div style="display:flex;justify-content:center;margin-bottom:4px">
-        <div id="avModalPreview" style="border-radius:50%;border:3px solid #00897B;overflow:hidden">${buildAvatarSVG(c,110)}</div>
-      </div>
-      <p style="text-align:center;font-size:11px;color:#888;margin:4px 0 16px">Se actualiza al elegir opciones</p>
-
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Género</div>
-        <div style="display:flex;gap:8px" id="avGenderRow"></div>
-      </div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Tono de piel</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avSkinRow"></div></div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Cabello</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avHairRow"></div></div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Color de cabello</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avHairColorRow"></div></div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Ropa</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avOutfitRow"></div></div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Color de ropa</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avOutfitColorRow"></div></div>
-      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Accesorios</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avAccRow"></div></div>
-      ${showFacial?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Vello facial</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avFacialRow"></div></div>`:""}
-      <div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Fondo</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avBgRow"></div></div>
-      <button id="avSave" style="width:100%;background:#00897B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">✅ Guardar mi avatar</button>
-    </div>`;
-
-    document.getElementById("avClose").onclick=()=>modal.remove();
-    document.getElementById("avSave").onclick=()=>{ saveAvatar(state.avTmp); modal.remove(); renderAll(); };
-
-    // Género
-    const gRow=document.getElementById("avGenderRow");
-    [{v:"woman",l:"👩 Mujer"},{v:"man",l:"👨 Hombre"},{v:"nb",l:"🧑 No definido"}].forEach(g=>{
-      const btn=document.createElement("button");
-      btn.textContent=g.l;
-      const on=c.gender===g.v;
-      btn.style.cssText=`flex:1;border:2px solid ${on?"#00897B":"#ddd"};border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;background:${on?"#E8F5E9":"transparent"};color:${on?"#00535E":"#555"};font-family:inherit`;
-      btn.onclick=()=>{
-        const def={woman:{hair:"longstraight",facialHair:"none"},man:{hair:"shortflat",facialHair:"none"},nb:{hair:"bob",facialHair:"none"}};
-        state.avTmp={...state.avTmp,gender:g.v,...def[g.v]};
-        renderModal();
-      };
-      gRow.appendChild(btn);
-    });
-
-    // Helper para filas de opciones
-    function fillRow(id, items, key, type){
-      const row=document.getElementById(id); if(!row) return;
-      items.forEach(item=>{
-        const val=typeof item==="string"?item:item.v;
-        const label=typeof item==="string"?"":item.l;
-        const on=String(c[key])===String(val);
-        const btn=document.createElement("button");
-        if(type==="dot"){
-          btn.style.cssText=`width:32px;height:32px;border-radius:50%;background:#${val};border:3px solid ${on?"#00897B":"transparent"};cursor:pointer;flex-shrink:0`;
-          btn.title=label;
-        } else if(type==="sq"){
-          btn.style.cssText=`width:32px;height:32px;border-radius:6px;background:#${val};border:3px solid ${on?"#00897B":"transparent"};cursor:pointer;flex-shrink:0`;
-          btn.title=label;
-        } else {
-          btn.style.cssText=btnS(on);
-          btn.textContent=label;
-        }
-        btn.onclick=()=>{ state.avTmp={...state.avTmp,[key]:val}; avUpdatePreview(); fillRow(id,items,key,type); };
-        row.appendChild(btn);
-      });
-    }
-
-    fillRow("avSkinRow",SKINS,"skin","dot");
-    fillRow("avHairRow",hairs,"hair","text");
-    fillRow("avHairColorRow",HAIR_COLORS,"hairColor","dot");
-    fillRow("avOutfitRow",OUTFITS,"outfit","text");
-    fillRow("avOutfitColorRow",OUTFIT_COLORS,"outfitColor","dot");
-    fillRow("avAccRow",ACCS,"acc","text");
-    if(showFacial) fillRow("avFacialRow",FACIAL,"facialHair","text");
-    fillRow("avBgRow",BGS,"bg","sq");
-  }
-
-  document.body.appendChild(modal);
-  renderModal();
-}
-
-function avatarBadge(av,size=36,editable=false){
-  const svg=buildAvatarSVG(av,size);
-  const btn=editable?`<button onclick="openAvatarEditor()" style="position:absolute;bottom:-2px;right:-2px;background:#00897B;border:2px solid #fff;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;color:#fff;line-height:1">✏️</button>`:"";
-  return `<div style="position:relative;display:inline-block">${svg}${btn}</div>`;
-}
 
 window.addEventListener("hashchange", function(){ showView(); checkAdminRoute(); window.scrollTo(0,0); });
 showView();
