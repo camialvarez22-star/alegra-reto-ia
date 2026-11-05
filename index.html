@@ -450,7 +450,7 @@
   </div>
 </div>
 
-<div id="view-reto">
+<div id="view-reto" style="display:none">
 <div class="intro-recap">
   <div class="intro-recap-inner">
     <div class="intro-recap-left">
@@ -1176,17 +1176,27 @@ checkAdminRoute();
 
 function showView(){
   const h = location.hash.replace("#","").split("?")[0].trim();
-  if(h === "reto"){
-    const el = document.getElementById("view-reto");
-    if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth"}),100);
-  } else if(h === "admin"){
-    checkAdminRoute();
-  } else if(h === ""){
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
+  const introEl = document.getElementById("view-intro");
+  const retoEl = document.getElementById("view-reto");
+  const showReto = (h === "reto" || h === "admin" || h === "ranking");
+  if(introEl) introEl.style.display = showReto ? "none" : "";
+  if(retoEl) retoEl.style.display = showReto ? "" : "none";
 }
 
-window.addEventListener("hashchange", function(){ showView(); });
+document.addEventListener("click", function(e){
+  const a = e.target.closest("a[href='#reto']");
+  if(a){
+    e.preventDefault();
+    location.hash = "reto";
+  }
+  const b = e.target.closest("a[href='#'],.back-link");
+  if(b){
+    e.preventDefault();
+    location.hash = "";
+  }
+});
+
+window.addEventListener("hashchange", function(){ showView(); checkAdminRoute(); window.scrollTo(0,0); });
 window.addEventListener("DOMContentLoaded", function(){
   showView();
   checkAdminRoute();
