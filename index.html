@@ -1068,6 +1068,34 @@ function openAvatarEditor(){ return; }
 
 window.addEventListener("hashchange", function(){ showView(); checkAdminRoute(); window.scrollTo(0,0); });
 showView();
+
+// Verificar puntos de Amplitude automáticamente
+async function checkAmplitudePoints(){
+  if(!state.registered||!state.email) return;
+  try{
+    const res=await fetch("https://gizsgvprykxyrvnaogcr.supabase.co/functions/v1/check-amplitude-events",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpenNndnByeWt4eXJ2bmFvZ2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3NTc2MTgsImV4cCI6MjEwOTMzMzYxOH0.T9Uo2zU6O-kxrArMOrCGSsYI0v1CvQPuRNPqA8166x8"},
+      body:JSON.stringify({email:state.email})
+    });
+    const data=await res.json();
+    if(data.newMissions&&data.newMissions.length>0){
+      data.newMissions.forEach(id=>{ state.done[id]=true; delete state.pending[id]; });
+      saveState(); renderAll();
+      const msg=document.createElement("div");
+      msg.style.cssText="position:fixed;bottom:24px;right:24px;background:#00897B;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+      msg.textContent="🎉 "+data.message;
+      document.body.appendChild(msg);
+      setTimeout(()=>msg.remove(),5000);
+    }
+  }catch(e){ console.warn("Error sync Amplitude:",e); }
+}
+
+// Verificar al cargar si ya está registrado
+if(state.registered&&state.email) setTimeout(checkAmplitudePoints, 2000);
+
+// Verificar cada 5 minutos
+setInterval(()=>{ if(state.registered&&state.email) checkAmplitudePoints(); }, 5*60*1000);
 </script>
 </body>
 </html>
