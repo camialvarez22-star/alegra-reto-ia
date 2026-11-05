@@ -1006,163 +1006,163 @@ function showView(){
 /* ============================================================
    AVATAR DICEBEAR AVATAAARS
 ============================================================ */
+const BASE_AV = "https://api.dicebear.com/9.x/avataaars/svg";
+
 const AVATAR_DEFAULTS = {
-  gender:"woman", skin:"f8d25c", hair:"longButNotTooLong", hairColor:"724133",
-  outfit:"blazerAndSweater", outfitColor:"00897B", acc:"none", bg:"b6e3f4", facialHair:"none"
+  gender:"woman", skin:"f8d25c", hair:"longHairNotTooLong", hairColor:"724133",
+  outfit:"blazerAndSweater", outfitColor:"00897B", acc:"", bg:"b6e3f4", facialHair:""
 };
-const DICEBEAR_BASE = "https://api.dicebear.com/9.x/avataaars/svg";
+
+const AV_HAIRS = {
+  woman:[{v:"longHairBigHair",l:"Voluminoso"},{v:"longHairBob",l:"Bob"},{v:"longHairCurly",l:"Rizado"},{v:"longHairCurvy",l:"Ondulado"},{v:"longHairDreads",l:"Trenzas"},{v:"longHairFro",l:"Afro"},{v:"longHairNotTooLong",l:"Semi-largo"},{v:"longHairShavedSides",l:"Rapado lados"},{v:"longHairStraight",l:"Lacio"},{v:"longHairFrida",l:"Frida"}],
+  man:[{v:"shortHairDreads01",l:"Rastas"},{v:"shortHairDreads02",l:"Rastas 2"},{v:"shortHairFrizzle",l:"Frizzle"},{v:"shortHairShaggyMullet",l:"Mullet"},{v:"shortHairShortCurly",l:"Corto rizado"},{v:"shortHairShortFlat",l:"Corto liso"},{v:"shortHairShortRound",l:"Corto redondo"},{v:"shortHairShortWaved",l:"Ondulado"},{v:"shortHairSides",l:"Clásico"},{v:"shortHairTheCaesar",l:"César"}],
+  nb:[{v:"longHairBob",l:"Bob"},{v:"longHairCurly",l:"Rizado largo"},{v:"shortHairShortFlat",l:"Corto liso"},{v:"shortHairShortCurly",l:"Corto rizado"},{v:"longHairFro",l:"Afro"},{v:"longHairDreads",l:"Trenzas"},{v:"shortHairDreads01",l:"Rastas"},{v:"longHairShavedSides",l:"Rapado lados"}]
+};
+const AV_OUTFITS = {
+  woman:[{v:"blazerAndSweater",l:"Blazer+suéter"},{v:"collarSweater",l:"Suéter cuello"},{v:"graphicShirt",l:"Camiseta"},{v:"hoodie",l:"Hoodie"},{v:"overall",l:"Overall"},{v:"shirtCrewNeck",l:"Básica"},{v:"shirtScoopNeck",l:"Escote"},{v:"shirtVNeck",l:"Escote V"}],
+  man:[{v:"blazerAndShirt",l:"Blazer+camisa"},{v:"blazerAndSweater",l:"Blazer+suéter"},{v:"collarSweater",l:"Suéter"},{v:"graphicShirt",l:"Camiseta"},{v:"hoodie",l:"Hoodie"},{v:"shirtCrewNeck",l:"Básica"},{v:"shirtVNeck",l:"Escote V"},{v:"overall",l:"Overall"}],
+  nb:[{v:"hoodie",l:"Hoodie"},{v:"graphicShirt",l:"Camiseta"},{v:"blazerAndSweater",l:"Blazer"},{v:"collarSweater",l:"Suéter"},{v:"shirtCrewNeck",l:"Básica"},{v:"shirtVNeck",l:"Escote V"},{v:"overall",l:"Overall"},{v:"blazerAndShirt",l:"Camisa formal"}]
+};
+const AV_FACIAL=[{v:"",l:"Ninguna"},{v:"beardLight",l:"Ligera"},{v:"beardMedium",l:"Mediana"},{v:"beardMagestic",l:"Majestuosa"},{v:"moustaceFancy",l:"Bigote"},{v:"moustaceMagnum",l:"Magnum"}];
+const AV_ACCS=[{v:"",l:"Ninguno"},{v:"eyepatch",l:"Parche"},{v:"kurt",l:"Kurt"},{v:"prescription01",l:"Gafas 1"},{v:"prescription02",l:"Gafas 2"},{v:"round",l:"Redondas"},{v:"sunglasses",l:"Sol"},{v:"wayfarers",l:"Wayfarer"}];
+const AV_SKINS=["ffdbb4","f8d25c","edb98a","d08b5b","ae5d29","614335"];
+const AV_HAIR_COLORS=["1c1c1c","4a312c","724133","b58143","e8e1ef","a55728","fc909f","6c4b3a"];
+const AV_OUTFIT_COLORS=["00897B","1565C0","C62828","4A1580","2E7D32","E65100","546E7A","212121","00535E","4a312c"];
+const AV_BGS=["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","e8f5e9","fff9c4","f3e5f5","a0d8ef","fce4ec"];
 
 function getAvatar(){ return (state&&state.avatar)?{...AVATAR_DEFAULTS,...state.avatar}:{...AVATAR_DEFAULTS}; }
 
 function avatarUrl(av, seed){
   const a={...AVATAR_DEFAULTS,...(av||{})};
-  const s=seed||state.email||"default";
-  let url=`${DICEBEAR_BASE}?seed=${encodeURIComponent(s)}&backgroundColor=${a.bg}&skinColor=${a.skin}&hairColor=${a.hairColor}&clothesColor=${a.outfitColor}&mouth=smile&eyes=happy`;
-  if(a.hair&&a.hair!=="none") url+=`&hair=${a.hair}`;
-  if(a.outfit&&a.outfit!=="none") url+=`&clothes=${a.outfit}`;
-  if(a.acc&&a.acc!=="none") url+=`&accessories=${a.acc}`;
-  if(a.facialHair&&a.facialHair!=="none") url+=`&facialHair=${a.facialHair}`;
-  return url;
+  const s=encodeURIComponent(seed||state.email||"default");
+  const p=new URLSearchParams({seed:s,backgroundColor:a.bg,skinColor:a.skin,hairColor:a.hairColor,clothesColor:a.outfitColor,mouth:"smile",eyes:"happy"});
+  if(a.hair) p.set("top",a.hair);
+  if(a.outfit) p.set("clothes",a.outfit);
+  if(a.acc) p.set("accessories",a.acc); else p.set("accessoriesProbability","0");
+  if(a.facialHair) p.set("facialHair",a.facialHair); else p.set("facialHairProbability","0");
+  return `${BASE_AV}?${p.toString()}`;
 }
 
 function avatarImg(av, size=36, seed){
-  return `<img src="${avatarUrl(av,seed)}" width="${size}" height="${size}" style="border-radius:50%;flex-shrink:0;object-fit:cover" alt="avatar">`;
+  return `<img src="${avatarUrl(av,seed)}" width="${size}" height="${size}" style="border-radius:50%;flex-shrink:0;object-fit:cover;background:#eee" alt="avatar" onerror="this.style.opacity=0.3">`;
 }
-function pixelChar(av, size=36){ return avatarImg(av, size); }
-function avatarSvg(av, size=36){ return avatarImg(av, size); }
+function pixelChar(av,size=36){ return avatarImg(av,size); }
+function avatarSvg(av,size=36){ return avatarImg(av,size); }
 
 function saveAvatar(av){
   state.avatar=av; saveState();
   if(sb&&state.participantId){ try{sb.from("participants").update({choices:{...state.choices,avatar:av}}).eq("email",state.email);}catch(e){} }
 }
 
-function openAvatarEditor(){
-  const SKINS=[{v:"ffdbb4",l:"Muy claro"},{v:"f8d25c",l:"Claro"},{v:"edb98a",l:"Medio claro"},{v:"d08b5b",l:"Medio"},{v:"ae5d29",l:"Oscuro"},{v:"614335",l:"Muy oscuro"}];
-  const HAIRS={
-    woman:[{v:"longButNotTooLong",l:"Largo liso"},{v:"straight01",l:"Lacio corto"},{v:"straight02",l:"Con flequillo"},{v:"curly",l:"Rizado"},{v:"curvy",l:"Ondulado"},{v:"bigHair",l:"Voluminoso"},{v:"dreads01",l:"Trenzas"},{v:"frizzle",l:"Afro"},{v:"shaggy",l:"Despeinado"},{v:"shavedSides",l:"Rapado lados"}],
-    man:[{v:"shortFlat",l:"Corto liso"},{v:"shortRound",l:"Corto redondo"},{v:"shortWaved",l:"Ondulado"},{v:"sides",l:"Clásico"},{v:"dreads02",l:"Rastas"},{v:"frizzle",l:"Afro"},{v:"caesar",l:"César"},{v:"shavedSides",l:"Rapado"},{v:"pompadour",l:"Pompadour"},{v:"theCaesar",l:"Clásico 2"}],
-    nb:[{v:"shortFlat",l:"Corto"},{v:"longButNotTooLong",l:"Largo"},{v:"curly",l:"Rizado"},{v:"frizzle",l:"Afro"},{v:"dreads01",l:"Trenzas"},{v:"shavedSides",l:"Rapado"},{v:"straight01",l:"Lacio"},{v:"bigHair",l:"Voluminoso"}]
-  };
-  const HAIR_COLORS=[{v:"1c1c1c",l:"Negro"},{v:"4a312c",l:"Castaño oscuro"},{v:"724133",l:"Castaño"},{v:"b58143",l:"Rubio oscuro"},{v:"e8e1ef",l:"Rubio claro"},{v:"a55728",l:"Cobrizo"},{v:"fc909f",l:"Rosa"},{v:"6c4b3a",l:"Chocolate"}];
-  const OUTFITS={
-    woman:[{v:"blazerAndSweater",l:"Blazer suéter"},{v:"collarSweater",l:"Suéter cuello"},{v:"graphicShirt",l:"Camiseta"},{v:"hoodie",l:"Hoodie"},{v:"overall",l:"Overall"},{v:"shirtCrewNeck",l:"Básica"},{v:"shirtScoopNeck",l:"Escote redondo"},{v:"shirtVNeck",l:"Escote V"}],
-    man:[{v:"blazerAndShirt",l:"Blazer y camisa"},{v:"blazerAndSweater",l:"Blazer suéter"},{v:"collarSweater",l:"Suéter cuello"},{v:"graphicShirt",l:"Camiseta"},{v:"hoodie",l:"Hoodie"},{v:"shirtCrewNeck",l:"Básica"},{v:"shirtVNeck",l:"Escote V"},{v:"overall",l:"Overall"}],
-    nb:[{v:"hoodie",l:"Hoodie"},{v:"graphicShirt",l:"Camiseta"},{v:"blazerAndSweater",l:"Blazer"},{v:"collarSweater",l:"Suéter"},{v:"shirtCrewNeck",l:"Básica"},{v:"overall",l:"Overall"},{v:"shirtVNeck",l:"Escote V"},{v:"blazerAndShirt",l:"Camisa formal"}]
-  };
-  const OUTFIT_COLORS=[{v:"00897B",l:"Teal"},{v:"1565C0",l:"Azul"},{v:"C62828",l:"Rojo"},{v:"4A1580",l:"Morado"},{v:"2E7D32",l:"Verde"},{v:"E65100",l:"Naranja"},{v:"546E7A",l:"Gris"},{v:"212121",l:"Negro"},{v:"00535E",l:"Verde oscuro"},{v:"4a312c",l:"Café"}];
-  const ACCS=[{v:"none",l:"Ninguno"},{v:"prescription01",l:"Gafas 1"},{v:"prescription02",l:"Gafas 2"},{v:"sunglasses",l:"Gafas sol"},{v:"round",l:"Redondas"},{v:"wayfarers",l:"Wayfarer"},{v:"kurt",l:"Kurt"},{v:"eyepatch",l:"Parche"}];
-  const FACIAL=[{v:"none",l:"Ninguna"},{v:"beardLight",l:"Ligera"},{v:"beardMedium",l:"Mediana"},{v:"beardMagestic",l:"Majestuosa"},{v:"moustaceFancy",l:"Bigote"},{v:"moustaceMagnum",l:"Magnum"}];
-  const BGS=[{v:"b6e3f4",l:"Azul cielo"},{v:"c0aede",l:"Lila"},{v:"d1d4f9",l:"Índigo"},{v:"ffd5dc",l:"Rosa"},{v:"ffdfbf",l:"Durazno"},{v:"e8f5e9",l:"Verde"},{v:"fff9c4",l:"Amarillo"},{v:"f3e5f5",l:"Violeta"},{v:"00897B",l:"Teal"},{v:"001E3B",l:"Azul noche"}];
+function avMkBtn(tag,attrs,text){
+  const el=document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==="onclick") el.onclick=v;
+    else if(k==="className") el.className=v;
+    else if(k==="style") el.style.cssText=v;
+    else el.setAttribute(k,v);
+  });
+  if(text!==undefined) el.textContent=text;
+  return el;
+}
 
+function avRenderRow(containerId,items,currentVal,key,type){
+  const el=document.getElementById(containerId); if(!el) return;
+  el.innerHTML="";
+  items.forEach(item=>{
+    const val=typeof item==="string"?item:item.v;
+    const label=typeof item==="string"?"":item.l;
+    const isOn=String(currentVal)===String(val);
+    let btn;
+    if(type==="dot"){
+      btn=avMkBtn("button",{className:`av-dot${isOn?" av-on":""}`,style:`background:#${val};width:32px;height:32px;border-radius:50%;border:3px solid ${isOn?"#00897B":"transparent"};cursor:pointer;flex-shrink:0`});
+      btn.title=val;
+    } else if(type==="sq"){
+      btn=avMkBtn("button",{className:`av-sq${isOn?" av-on":""}`,style:`background:#${val};width:32px;height:32px;border-radius:6px;border:3px solid ${isOn?"#00897B":"transparent"};cursor:pointer;flex-shrink:0`});
+      btn.title=val;
+    } else {
+      btn=avMkBtn("button",{className:`av-btn${isOn?" av-on":""}`,style:`border:2px solid ${isOn?"#00897B":"#eee"};border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;background:${isOn?"#E8F5E9":"transparent"};color:${isOn?"#00535E":"#555"};font-family:inherit`},label);
+    }
+    btn.onclick=()=>{ state.avTmp={...state.avTmp,[key]:val}; avUpdatePreview(); avRenderRow(containerId,items,val,key,type); };
+    el.appendChild(btn);
+  });
+}
+
+function avUpdatePreview(){
+  const img=document.getElementById("avModalPreview");
+  if(img) img.src=avatarUrl(state.avTmp, state.email||"preview");
+}
+
+function openAvatarEditor(){
+  state.avTmp={...getAvatar()};
   const modal=document.createElement("div");
   modal.id="avModal";
   modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto";
 
-  function btnStyle(selected){ return `border:2px solid ${selected?"#00897B":"#eee"};border-radius:8px;padding:5px 9px;font-size:11px;cursor:pointer;background:${selected?"#E8F5E9":"transparent"};color:${selected?"#00535E":"#555"}`; }
-  function colorBtn(hex, selected, key){ return `<button onclick="setAv('${key}','${hex}')" data-av-key="${key}" data-av-val="${hex}" data-av-type="color" title="${hex}" style="width:30px;height:30px;border-radius:50%;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
-  function sqBtn(hex, selected, key){ return `<button onclick="setAv('bg','${hex}')" data-av-key="bg" data-av-val="${hex}" data-av-type="sq" title="${hex}" style="width:30px;height:30px;border-radius:6px;background:#${hex};border:3px solid ${selected?"#00897B":"transparent"};cursor:pointer"></button>`; }
-
-  function render(){
-    const c=getAvatar();
-    const hairs=HAIRS[c.gender]||HAIRS.woman;
-    const outfits=OUTFITS[c.gender]||OUTFITS.woman;
+  function buildHTML(c){
     const showFacial=(c.gender==="man"||c.gender==="nb");
-    modal.innerHTML=`<div style="background:var(--surface,#fff);border-radius:20px;padding:24px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto">
+    return `<div style="background:var(--surface,#fff);border-radius:20px;padding:24px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto;color:var(--text,#111)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <h3 style="margin:0;font-size:17px;font-weight:700">🎨 Crea tu avatar</h3>
-        <button onclick="document.getElementById('avModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999">✕</button>
+        <button id="avCloseBtn" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999">✕</button>
       </div>
-      <div style="display:flex;justify-content:center;margin-bottom:20px">
-        <img id="avPreview" src="${avatarUrl(c,state.email||'preview')}" width="110" height="110" style="border-radius:50%;border:3px solid #00897B" alt="preview">
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Género</div>
-        <div style="display:flex;gap:8px">
-          ${[{v:"woman",l:"👩 Mujer"},{v:"man",l:"👨 Hombre"},{v:"nb",l:"🧑 No definido"}].map(g=>`<button onclick="setAvG('${g.v}')" data-av-gender="${g.v}" style="flex:1;border:2px solid ${c.gender===g.v?"#00897B":"#ddd"};border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;background:${c.gender===g.v?"#E8F5E9":"transparent"};color:${c.gender===g.v?"#00535E":"#555"}">${g.l}</button>`).join("")}
-        </div>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;gap:6px">
+        <img id="avModalPreview" src="${avatarUrl(c,state.email||'preview')}" width="110" height="110" style="border-radius:50%;border:3px solid #00897B;background:#eee" alt="preview">
+        <span style="font-size:11px;color:#888">Se actualiza al elegir opciones</span>
       </div>
       <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Tono de piel</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${SKINS.map(s=>colorBtn(s.v,c.skin===s.v,"skin")).join("")}</div>
+        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Género</div>
+        <div style="display:flex;gap:8px" id="avGenderRow"></div>
       </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Cabello</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${hairs.map(h=>`<button onclick="setAv('hair','${h.v}')" data-av-key="hair" data-av-val="${h.v}" style="${btnStyle(c.hair===h.v)}">${h.l}</button>`).join("")}</div>
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Color de cabello</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${HAIR_COLORS.map(h=>colorBtn(h.v,c.hairColor===h.v,"hairColor")).join("")}</div>
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Ropa</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${outfits.map(o=>`<button onclick="setAv('outfit','${o.v}')" data-av-key="outfit" data-av-val="${o.v}" style="${btnStyle(c.outfit===o.v)}">${o.l}</button>`).join("")}</div>
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Color de ropa</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${OUTFIT_COLORS.map(o=>colorBtn(o.v,c.outfitColor===o.v,"outfitColor")).join("")}</div>
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Accesorios</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${ACCS.map(a=>`<button onclick="setAv('acc','${a.v}')" data-av-key="acc" data-av-val="${a.v}" style="${btnStyle(c.acc===a.v)}">${a.l}</button>`).join("")}</div>
-      </div>
-      ${showFacial?`<div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Vello facial</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${FACIAL.map(f=>`<button onclick="setAv('facialHair','${f.v}')" data-av-key="facialHair" data-av-val="${f.v}" style="${btnStyle(c.facialHair===f.v)}">${f.l}</button>`).join("")}</div>
-      </div>`:""}
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Fondo</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${BGS.map(b=>sqBtn(b.v,c.bg===b.v,"bg")).join("")}</div>
-      </div>
-      <button onclick="saveAndClose()" style="width:100%;background:#00897B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer">✅ Guardar mi avatar</button>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Tono de piel</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avSkinRow"></div></div>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Cabello</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avHairRow"></div></div>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Color de cabello</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avHairColorRow"></div></div>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Ropa</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avOutfitRow"></div></div>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Color de ropa</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avOutfitColorRow"></div></div>
+      <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Accesorios</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avAccRow"></div></div>
+      ${showFacial?'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Vello facial</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="avFacialRow"></div></div>':""}
+      <div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Fondo</div><div style="display:flex;gap:8px;flex-wrap:wrap" id="avBgRow"></div></div>
+      <button id="avSaveBtn" style="width:100%;background:#00897B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">✅ Guardar mi avatar</button>
     </div>`;
   }
 
-  function updateButtons(){
-    const c=getAvatar();
-    // Actualizar preview
-    const img=document.getElementById("avPreview");
-    if(img) img.src=avatarUrl(c,state.email||"preview");
-    // Actualizar estilos de botones
-    modal.querySelectorAll("[data-av-key]").forEach(btn=>{
-      const k=btn.getAttribute("data-av-key");
-      const v=btn.getAttribute("data-av-val");
-      const selected=String(c[k])===String(v);
-      if(btn.getAttribute("data-av-type")==="color"){
-        btn.style.border=`3px solid ${selected?"#00897B":"transparent"}`;
-      } else if(btn.getAttribute("data-av-type")==="sq"){
-        btn.style.border=`3px solid ${selected?"#00897B":"transparent"}`;
-      } else {
-        btn.style.border=`2px solid ${selected?"#00897B":"#eee"}`;
-        btn.style.background=selected?"#E8F5E9":"transparent";
-        btn.style.color=selected?"#00535E":"#555";
-      }
+  function renderModal(){
+    const c=state.avTmp;
+    modal.innerHTML=buildHTML(c);
+    // Eventos fijos
+    document.getElementById("avCloseBtn").onclick=()=>modal.remove();
+    document.getElementById("avSaveBtn").onclick=()=>{ saveAvatar(state.avTmp); modal.remove(); renderAll(); };
+    // Género
+    const gRow=document.getElementById("avGenderRow");
+    [{v:"woman",l:"👩 Mujer"},{v:"man",l:"👨 Hombre"},{v:"nb",l:"🧑 No definido"}].forEach(g=>{
+      const btn=document.createElement("button");
+      btn.textContent=g.l;
+      btn.style.cssText=`flex:1;border:2px solid ${c.gender===g.v?"#00897B":"#ddd"};border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;cursor:pointer;background:${c.gender===g.v?"#E8F5E9":"transparent"};color:${c.gender===g.v?"#00535E":"#555"};font-family:inherit`;
+      btn.onclick=()=>{
+        const def={woman:{hair:"longHairNotTooLong",outfit:"blazerAndSweater",facialHair:""},man:{hair:"shortHairShortFlat",outfit:"blazerAndShirt",facialHair:""},nb:{hair:"longHairCurly",outfit:"hoodie",facialHair:""}};
+        state.avTmp={...state.avTmp,gender:g.v,...def[g.v]};
+        renderModal();
+        avUpdatePreview();
+      };
+      gRow.appendChild(btn);
     });
-    // Actualizar botones de género
-    modal.querySelectorAll("[data-av-gender]").forEach(btn=>{
-      const g=btn.getAttribute("data-av-gender");
-      const selected=c.gender===g;
-      btn.style.border=`2px solid ${selected?"#00897B":"#ddd"}`;
-      btn.style.background=selected?"#E8F5E9":"transparent";
-      btn.style.color=selected?"#00535E":"#555";
-    });
+    // Resto de filas
+    avRenderRow("avSkinRow",AV_SKINS,c.skin,"skin","dot");
+    avRenderRow("avHairRow",AV_HAIRS[c.gender]||AV_HAIRS.woman,c.hair,"hair","text");
+    avRenderRow("avHairColorRow",AV_HAIR_COLORS,c.hairColor,"hairColor","dot");
+    avRenderRow("avOutfitRow",AV_OUTFITS[c.gender]||AV_OUTFITS.woman,c.outfit,"outfit","text");
+    avRenderRow("avOutfitColorRow",AV_OUTFIT_COLORS,c.outfitColor,"outfitColor","dot");
+    avRenderRow("avAccRow",AV_ACCS,c.acc,"acc","text");
+    if(c.gender==="man"||c.gender==="nb") avRenderRow("avFacialRow",AV_FACIAL,c.facialHair,"facialHair","text");
+    avRenderRow("avBgRow",AV_BGS,c.bg,"bg","sq");
   }
 
-  window.setAv=function(k,v){
-    state.avatar={...getAvatar(),[k]:v};
-    updateButtons();
-  };
-  window.setAvG=function(g){
-    const def={woman:{hair:"longButNotTooLong",outfit:"blazerAndSweater",facialHair:"none"},man:{hair:"shortFlat",outfit:"blazerAndShirt",facialHair:"none"},nb:{hair:"curly",outfit:"hoodie",facialHair:"none"}};
-    state.avatar={...getAvatar(),gender:g,...def[g]};
-    render();
-  };
-  window.saveAndClose=function(){ saveAvatar(getAvatar()); modal.remove(); renderAll(); };
-  render();
+  renderModal();
   document.body.appendChild(modal);
 }
 
-function avatarBadge(av, size=36, editable=false){
-  const btn=editable?`<button onclick="openAvatarEditor()" style="position:absolute;bottom:-2px;right:-2px;background:#00897B;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;color:#fff">✏️</button>`:"";
+function avatarBadge(av,size=36,editable=false){
+  const btn=editable?`<button onclick="openAvatarEditor()" style="position:absolute;bottom:-2px;right:-2px;background:#00897B;border:2px solid #fff;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center">✏️</button>`:"";
   return `<div style="position:relative;display:inline-block">${avatarImg(av,size)}${btn}</div>`;
 }
 
