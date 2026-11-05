@@ -676,8 +676,9 @@ const TOTAL_POSSIBLE = Object.values(MISSIONS).reduce((s,d)=>s+d.items.reduce((a
    ESTADO LOCAL
 ============================================================ */
 const STORAGE_KEY = "aleRetoV2_contadores";
+const AVATAR_DEFAULTS = {};
 let state = loadState();
-function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null,avatar:{...AVATAR_DEFAULTS}}; }
+function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){ const s=JSON.parse(r); if(!s.pending) s.pending={}; if(!s.utm) s.utm={}; return s; } }catch(e){} return {done:{},choices:{},pending:{},utm:{},activeDay:1,registered:false,participantId:null,email:null}; }
 function saveState(){ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){} }
 function resetProgress(){ if(!confirm("¿Reiniciar tu progreso?")) return; const e=state.email,p=state.participantId,r=state.registered; state={done:{},choices:{},pending:{},activeDay:1,registered:r,participantId:p,email:e}; saveState(); if(sb&&p) syncToSupabase(); renderAll(); }
 function currentPoints(){ let t=0; for(const d of Object.values(MISSIONS)) for(const m of d.items) if(state.done[m.id]) t+=m.pts; return t; }
@@ -732,10 +733,10 @@ async function register(){
       const done={};(existing.missions_done||[]).forEach(id=>done[id]=true);state.done=done;
     }
     if(isReturning && existing.choices && existing.choices.avatar){
-      state.avatar={...AVATAR_DEFAULTS,...existing.choices.avatar};
+      state.avatar=existing.choices.avatar||{};
     }
     state.registered=true;state.email=email;state.participantId=data.id||email;
-    if(!state.avatar) state.avatar={...AVATAR_DEFAULTS};
+    
     saveState();
     const elReg=document.getElementById("regStatus");
     elReg.style.display="block";
@@ -1012,7 +1013,7 @@ function renderAdminRows(rows){
   if(!rows.length){ el.innerHTML=`<div class="lb-empty">Sin participantes de ${PRIZE_COUNTRY_RESTRICTION} esta semana todavía.</div>`; return; }
   el.innerHTML=rows.map((r,i)=>{
     const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1);
-    const avA=(r.choices&&r.choices.avatar)?{...AVATAR_DEFAULTS,...r.choices.avatar}:AVATAR_DEFAULTS;
+    const avA={};
     return `<div class="lb-row admin-row"><span class="lb-rank">${medal}</span><span style="display:flex;align-items:center;gap:10px">${pixelChar(avA,36)} ${esc(r.name)}</span><span class="lb-country">${esc(r.email)}</span><span class="lb-pts">${r.points||0}</span></div>`;
   }).join("");
 }
@@ -1056,9 +1057,8 @@ function showView(){
 }
 
 /* Avatar eliminado — funciones de compatibilidad */
-const AVATAR_DEFAULTS = {};
 function getAvatar(){ return {}; }
-function saveAvatar(av){ state.avatar=av; saveState(); }
+function saveAvatar(av){ if(state) state.avatar=av; saveState(); }
 function pixelChar(av,size){ return ""; }
 function avatarImg(av,size){ return ""; }
 function avatarBadge(av,size,editable){ return ""; }
