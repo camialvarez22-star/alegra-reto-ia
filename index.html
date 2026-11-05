@@ -695,6 +695,27 @@ async function register(){
 
   if(!sb){ state.registered=true;state.email=email;state.participantId=email; saveState(); showRegStatus("✅ Registrado localmente (Supabase no conectado aún). Ya puedes hacer las misiones.",true); renderAll(); return; }
 
+  // Validar que el correo existe en Alegra (HubSpot) via Edge Function
+  showRegStatus("🔍 Verificando que eres usuario de Alegra...");
+  document.getElementById("regBtn").disabled=true;
+  try{
+    const valRes=await fetch("https://gizsgvprykxyrvnaogcr.supabase.co/functions/v1/validate-alegra-user",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpenNndnByeWt4eXJ2bmFvZ2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3NTc2MTgsImV4cCI6MjEwOTMzMzYxOH0.T9Uo2zU6O-kxrArMOrCGSsYI0v1CvQPuRNPqA8166x8"},
+      body:JSON.stringify({email})
+    });
+    const val=await valRes.json();
+    if(!val.valid){
+      showRegStatus("❌ "+( val.reason||"Este correo no está registrado como usuario de Alegra. Usa el correo con el que accedes a tu cuenta de Alegra."));
+      document.getElementById("regBtn").disabled=false;
+      return;
+    }
+  }catch(e){
+    // Si falla la validación (red, etc.) dejamos pasar con advertencia
+    console.warn("Validación HubSpot falló, continuando:", e);
+  }
+  document.getElementById("regBtn").disabled=false;
+
   try{
     const u=state.utm||{};
     // Ver si ya existe
