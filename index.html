@@ -410,7 +410,7 @@
       <div class="prize-ticker"><span class="pt-icon">🎁</span><span class="pt-label">Juegas por:</span><span class="pt-text" id="prizeTickerText">Credencial Alegra Explorer</span></div>
       <div class="value-chips"><span>⏱️ ~20 min por misión</span><span>🤖 Tu agente de IA ya incluido</span></div>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="#reto">Empezar el reto</a>
+        <a class="btn btn-primary" href="#reto" onclick="event.preventDefault();location.hash='reto';showView();window.scrollTo(0,0)">Empezar el reto</a>
         <button class="btn btn-ghost" onclick="document.getElementById('heroPremios').scrollIntoView({behavior:'smooth'})">Ver los premios</button>
       </div>
     </div>
@@ -440,12 +440,12 @@
     </div>
 
     <div class="why-cta">
-      <a class="btn btn-primary" href="#reto">Empezar el reto</a>
+      <a class="btn btn-primary" href="#reto" onclick="event.preventDefault();location.hash='reto';showView();window.scrollTo(0,0)">Empezar el reto</a>
     </div>
   </section>
 
     <footer class="block">
-      Reto Alegra — Edición Contadores · Fase 1. ¿Ya leíste todo? <a href="#reto" style="color:var(--accent-strong);font-weight:600">Entra al reto y empieza el Día 1 →</a>
+      Reto Alegra — Edición Contadores · Fase 1. ¿Ya leíste todo? <a href="#reto" style="color:var(--accent-strong);font-weight:600" onclick="event.preventDefault();location.hash='reto';showView();window.scrollTo(0,0)">Entra al reto y empieza el Día 1 →</a>
     </footer>
   </div>
 </div>
@@ -457,7 +457,7 @@
       <div class="intro-recap-badge">⚡</div>
       <div>
         <h1>Alegra IA en Acción: Desafío de 3 Días</h1>
-        <p>Edición Contadores · Fase 1 · <a class="back-link" href="#">&larr; Volver a la explicación del reto</a></p>
+        <p>Edición Contadores · Fase 1 · <a class="back-link" href="#" onclick="event.preventDefault();location.hash='';showView();window.scrollTo(0,0)">&larr; Volver a la explicación del reto</a></p>
       </div>
     </div>
   </div>
